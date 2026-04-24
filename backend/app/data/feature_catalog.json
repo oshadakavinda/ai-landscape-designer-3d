@@ -1,0 +1,149 @@
+{
+  "features": [
+    {
+      "type": "bench",
+      "variants": [
+        {
+          "id": "bench_wood_01",
+          "width": 2.0,
+          "depth": 1.0
+        },
+        {
+          "id": "bench_stone_01",
+          "width": 2.0,
+          "depth": 0.7
+        }
+      ]
+    },
+    {
+      "type": "pond",
+      "variants": [
+        {
+          "id": "pond_small_01",
+          "width": 2.5,
+          "depth": 2.5
+        },
+        {
+          "id": "pond_large_01",
+          "width": 4.0,
+          "depth": 3.0
+        }
+      ]
+    },
+    {
+      "type": "fountain",
+      "variants": [
+        {
+          "id": "fountain_round_01",
+          "width": 1.5,
+          "depth": 1.5
+        }
+      ]
+    },
+    {
+      "type": "trees",
+      "variants": [
+        {
+          "id": "tree_oak_01",
+          "width": 4.0,
+          "depth": 4.0
+        },
+        {
+          "id": "tree_palm_01",
+          "width": 4.0,
+          "depth": 4.0
+        }
+      ]
+    },
+    {
+      "type": "flower_beds",
+      "variants": [
+        {
+          "id": "flower_bed_rect_01",
+          "width": 3.0,
+          "depth": 1.0
+        }
+      ]
+    },
+    {
+      "type": "vegetable_beds",
+      "variants": [
+        {
+          "id": "veg_bed_raised_01",
+          "width": 2.0,
+          "depth": 1.0
+        }
+      ]
+    },
+    {
+      "type": "lawn",
+      "variants": [
+        {
+          "id": "lawn_patch_01",
+          "width": 5.0,
+          "depth": 5.0
+        }
+      ]
+    },
+    {
+      "type": "pathway",
+      "variants": [
+        {
+          "id": "path_stone_01",
+          "width": 1.2,
+          "depth": 1.2
+        }
+      ]
+    },
+    {
+      "type": "driveway",
+      "variants": [
+        {
+          "id": "driveway_paved_01",
+          "width": 3.0,
+          "depth": 6.0
+        }
+      ]
+    },
+    {
+      "type": "garden_lights",
+      "variants": [
+        {
+          "id": "light_post_01",
+          "width": 0.2,
+          "depth": 0.2
+        }
+      ]
+    },
+    {
+      "type": "seating_area",
+      "variants": [
+        {
+          "id": "seating_patio_01",
+          "width": 4.0,
+          "depth": 4.0
+        }
+      ]
+    },
+    {
+      "type": "open_car_park",
+      "variants": [
+        {
+          "id": "car_park_open_01",
+          "width": 3.0,
+          "depth": 5.5
+        }
+      ]
+    },
+    {
+      "type": "covered_car_park",
+      "variants": [
+        {
+          "id": "car_park_covered_01",
+          "width": 3.5,
+          "depth": 6.0
+        }
+      ]
+    }
+  ]
+}
