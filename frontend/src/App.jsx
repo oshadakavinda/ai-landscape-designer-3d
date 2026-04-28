@@ -1,18 +1,25 @@
 import { useState } from 'react';
-import LayoutForm       from './components/sidebar/LayoutForm';
-import ObjectInspector  from './components/sidebar/ObjectInspector';
-import TopViewSvg       from './components/viewer2d/TopViewSvg';
-import ThreeDViewer     from './components/viewer3d/index';
-import ScorePanel       from './components/ScorePanel';
+import LayoutForm from './components/sidebar/LayoutForm';
+import ObjectInspector from './components/sidebar/ObjectInspector';
+import TopViewSvg from './components/viewer2d/TopViewSvg';
+import ThreeDViewer from './components/viewer3d/index';
+import ScorePanel from './components/ScorePanel';
 import { generateLandscapeDesign } from './api/landscapeApi';
-import './index.css';
-
+import exampleLayout from './data/exampleLayout.json';
 
 export default function App() {
   const [layout, setLayout] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [activeTab, setActiveTab] = useState('2d');
   const [error, setError] = useState(null);
+  // Track whether 3D has ever been opened — so we lazy-mount once and keep alive
+  const [has3dMounted, setHas3dMounted] = useState(false);
+
+  const handleUseExample = () => {
+    setLayout(exampleLayout);
+    setActiveTab('2d');
+    setError(null);
+  };
 
   const handleGenerate = async (formData) => {
     setIsLoading(true);
@@ -37,8 +44,13 @@ export default function App() {
       {/* ── Header ── */}
       <header className="app-header">
         <div className="logo-icon">🌿</div>
-        <h1>AI Landscape Designer</h1>
-        <span className="subtitle">Powered by Gemini · Vastu-aware · 3D Interactive</span>
+        <div className="header-titles">
+          <h1>AI Landscape Designer</h1>
+          <span className="subtitle">Powered by Gemini · Vastu-aware · 3D Interactive</span>
+        </div>
+        <button className="btn-example" onClick={handleUseExample}>
+          ✨ Use Example
+        </button>
       </header>
 
       <div className="app-body">
@@ -64,7 +76,11 @@ export default function App() {
             </button>
             <button
               className={`view-tab ${activeTab === '3d' ? 'active' : ''}`}
-              onClick={() => setActiveTab('3d')}
+              onClick={() => {
+                setActiveTab('3d');
+                // Lazy-mount: only mount ThreeDViewer the first time
+                if (!has3dMounted) setHas3dMounted(true);
+              }}
               disabled={!layout}
             >
               🧊 3D View
@@ -93,12 +109,25 @@ export default function App() {
               </div>
             )}
 
+            {/* 2D viewer — always shown when layout is ready and 2D is active */}
             {layout && !isLoading && activeTab === '2d' && (
               <TopViewSvg layout={layout} />
             )}
 
-            {layout && !isLoading && activeTab === '3d' && (
-              <ThreeDViewer layout={layout} />
+            {/*
+              3D viewer — lazy-mounted on first 3D tab click, then kept alive.
+              Uses visibility:hidden (NOT display:none) so the WebGL Canvas always
+              has real pixel dimensions and renders correctly even when "hidden".
+            */}
+            {layout && !isLoading && has3dMounted && (
+              <div style={{
+                position: 'absolute',
+                inset: 0,
+                visibility: activeTab === '3d' ? 'visible' : 'hidden',
+                pointerEvents: activeTab === '3d' ? 'auto' : 'none',
+              }}>
+                <ThreeDViewer layout={layout} />
+              </div>
             )}
           </div>
 

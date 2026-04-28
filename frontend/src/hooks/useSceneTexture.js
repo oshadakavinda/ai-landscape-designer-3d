@@ -14,28 +14,35 @@
  *   <meshStandardMaterial map={texture} color={texture ? undefined : '#0d1c0a'} />
  */
 
-import { useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import * as THREE from 'three';
 
 export function useSceneTexture(path, repeatX = 1, repeatZ = 1) {
-  return useMemo(() => {
-    if (!path) return null;
+  const [texture, setTexture] = useState(null);
 
-    try {
-      const loader = new THREE.TextureLoader();
-      const tex = loader.load(
-        path,
-        undefined,
-        undefined,
-        (err) => console.warn(`[useSceneTexture] Could not load texture: ${path}`, err)
-      );
-      tex.wrapS = THREE.RepeatWrapping;
-      tex.wrapT = THREE.RepeatWrapping;
-      tex.repeat.set(repeatX, repeatZ);
-      return tex;
-    } catch (e) {
-      console.warn('[useSceneTexture] Texture load failed:', e);
-      return null;
+  useEffect(() => {
+    if (!path) {
+      setTexture(null);
+      return;
     }
+
+    const loader = new THREE.TextureLoader();
+    loader.load(
+      path,
+      (tex) => {
+        tex.wrapS = THREE.RepeatWrapping;
+        tex.wrapT = THREE.RepeatWrapping;
+        tex.repeat.set(repeatX, repeatZ);
+        tex.needsUpdate = true;
+        setTexture(tex);
+      },
+      undefined,
+      (err) => {
+        console.warn(`[useSceneTexture] Failed to load: ${path}`, err);
+        setTexture(null);
+      }
+    );
   }, [path, repeatX, repeatZ]);
+
+  return texture;
 }

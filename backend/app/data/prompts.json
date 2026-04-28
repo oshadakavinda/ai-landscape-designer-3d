@@ -1,0 +1,4 @@
+{
+  "system_prompt": "You generate landscape layouts as JSON. Focus on object placements only. Do not include explanations.",
+  "user_prompt_template": "Land:{width}x{depth}{unit}. House@({house_x},{house_y}) size {house_w}x{house_d}. Road:{road_direction}. Style:{garden_style}. Vastu:{vastu_priority}. Vehicles:{vehicle_count}. Features:{features}. \n\nRules:\n- Origin(0,0)=SW\n- No overlap (house/objects)\n- Stay inside land\n- Min spacing 0.5m\n- Path: road→house\n- Parking near road if vehicles>0\n- Vastu: pond NE, trees N/E, avoid heavy NE\n- Use placement hints (bench→path, trees→boundary)\n\nReturn JSON:\n{\n\"objects\":[{\"id\":\"\",\"type\":\"\",\"variant\":\"\",\"x\":0,\"y\":0,\"rotation\":0,\"zoneId\":\"\"}],\n\"pathways\":[{\"id\":\"\",\"points\":[[x,y]],\"width\":1.2}],\n\"parking\":{\"x\":0,\"y\":0,\"vehicleCount\":0},\n\"unplaced\":[]\n}\n\nNo dimensions. JSON only."
+}

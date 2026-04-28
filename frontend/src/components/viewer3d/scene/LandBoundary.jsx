@@ -9,7 +9,7 @@ export default function LandBoundary({ land }) {
       {/* Glowing boundary perimeter */}
       <mesh position={[0, 0.11, 0]}>
         <boxGeometry args={[land.width + 0.45, 0.02, land.depth + 0.45]} />
-        <meshStandardMaterial color="#605647ff" emissive="#605647ff" emissiveIntensity={0.3} />
+        <meshStandardMaterial color="#605647" emissive="#605647" emissiveIntensity={0.3} />
       </mesh>
     </group>
   );

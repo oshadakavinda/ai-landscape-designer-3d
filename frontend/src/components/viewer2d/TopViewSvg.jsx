@@ -3,7 +3,7 @@
  * 2D SVG floor plan view.
  * Renders land boundary, zones, house, objects and pathways from a top-down perspective.
  */
-import { OBJECT_COLORS } from '../../data/featureCatalog';
+import { OBJECT_COLORS, OBJECT_DIMENSIONS } from '../../data/featureCatalog';
 import { MATERIAL_COLORS } from '../../constants/renderConfig';
 
 const PADDING    = 30;
@@ -77,8 +77,9 @@ export default function TopViewSvg({ layout }) {
       {/* Objects */}
       {objects.map(obj => {
         const color = MATERIAL_COLORS[obj.material] || OBJECT_COLORS[obj.type] || '#888';
-        const x = wx(obj.x), y = wy(obj.y + obj.depth);
-        const w = obj.width * scale, h = obj.depth * scale;
+        const dims  = OBJECT_DIMENSIONS[obj.variant] || OBJECT_DIMENSIONS['default'];
+        const w = dims.width * scale, h = dims.depth * scale;
+        const x = wx(obj.x), y = wy(obj.y + dims.depth);
         return (
           <g key={obj.id}>
             <rect x={x} y={y} width={w} height={h}

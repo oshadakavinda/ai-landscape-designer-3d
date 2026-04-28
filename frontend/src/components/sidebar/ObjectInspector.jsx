@@ -3,6 +3,8 @@
  * Shows a list of all placed objects and routed pathways with their
  * coordinates and dimensions from the backend response.
  */
+import { OBJECT_DIMENSIONS } from '../../data/featureCatalog';
+
 export default function ObjectInspector({ layout }) {
   if (!layout) return null;
 
@@ -20,13 +22,16 @@ export default function ObjectInspector({ layout }) {
           <span>Size (W×D)</span>
         </div>
 
-        {objects.map(obj => (
-          <div key={obj.id} className="object-row">
-            <span className="obj-type">{obj.type.replace(/_/g, ' ')}</span>
-            <span className="obj-pos">{obj.x}, {obj.y}</span>
-            <span className="obj-size">{obj.width}×{obj.depth}</span>
-          </div>
-        ))}
+        {objects.map(obj => {
+          const dims = OBJECT_DIMENSIONS[obj.variant] || OBJECT_DIMENSIONS['default'];
+          return (
+            <div key={obj.id} className="object-row">
+              <span className="obj-type">{(obj.type ?? obj.id ?? '—').replace(/_/g, ' ')}</span>
+              <span className="obj-pos">{obj.x}, {obj.y}</span>
+              <span className="obj-size">{dims.width}×{dims.depth}</span>
+            </div>
+          );
+        })}
 
         {pathways.length > 0 && (
           <>
@@ -39,7 +44,7 @@ export default function ObjectInspector({ layout }) {
               const [sx, sz] = pw.points?.[0] ?? [0, 0];
               return (
                 <div key={pw.id} className="object-row">
-                  <span className="obj-type">{pw.variant.replace(/_/g, ' ')}</span>
+                  <span className="obj-type">{(pw.variant ?? pw.id ?? 'pathway').replace(/_/g, ' ')}</span>
                   <span className="obj-pos">{sx.toFixed(1)}, {sz.toFixed(1)}</span>
                   <span className="obj-size">{pw.width}m</span>
                 </div>

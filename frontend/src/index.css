@@ -59,20 +59,52 @@ body {
   box-shadow: 0 0 18px rgba(99, 190, 123, 0.4);
 }
 
+.header-titles {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
 .app-header h1 {
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   font-weight: 700;
   letter-spacing: -0.3px;
   background: linear-gradient(90deg, var(--accent-green), var(--accent-sky));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+  line-height: 1;
 }
 
 .app-header .subtitle {
-  font-size: 0.75rem;
+  font-size: 0.65rem;
   color: var(--text-muted);
-  margin-left: auto;
   font-style: italic;
+}
+
+.btn-example {
+  margin-left: auto;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-primary);
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn-example:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: var(--accent-green);
+  transform: translateY(-1px);
+}
+
+.btn-example:active {
+  transform: translateY(0);
 }
 
 .app-body {

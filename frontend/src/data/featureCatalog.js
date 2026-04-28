@@ -55,6 +55,25 @@ export const MODEL_PATHS = {
   'tree_palm_01': '/models/trees/tree_palm_01.glb',
   'car_park_open_01': '/models/car_park/car_park_open_01.glb',
   'car_park_covered_01': '/models/car_park/car_park_covered_01.glb',
-  // Add more as you download them
+  'flower_bed_rect_01': '/models/flower_beds/flower_bed_rect_01.glb',
+  'flower_bed_rect_02': '/models/flower_beds/flower_bed_rect_02.glb',
+  'flower_bed_round_01': '/models/flower_beds/flower_bed_round_01.glb',
+  'fountain_round_01': '/models/fountain/fountain_round_01.glb',
+};
+
+export const OBJECT_DIMENSIONS = {
+  'bench_wood_01': { width: 1.5, depth: 0.6, height: 0.5 },
+  'bench_stone_01': { width: 1.8, depth: 0.7, height: 0.6 },
+  'pond_small_01': { width: 4.0, depth: 4.0, height: 0.3 },
+  'pond_large_01': { width: 8.0, depth: 6.0, height: 0.4 },
+  'tree_oak_01': { width: 2.5, depth: 2.5, height: 6.0 },
+  'tree_palm_01': { width: 2.0, depth: 2.0, height: 5.0 },
+  'car_park_open_01': { width: 3.0, depth: 5.5, height: 0.1 },
+  'car_park_covered_01': { width: 3.5, depth: 6.0, height: 2.5 },
+  'flower_bed_rect_01': { width: 3.0, depth: 1.5, height: 0.4 },
+  'flower_bed_rect_02': { width: 1.0, depth: 2.0, height: 0.1 },
+  'flower_bed_round_01': { width: 0.5, depth: 0.5, height: 0.1 },
+  'fountain_round_01': { width: 1, depth: 1.5, height: 0.1 },
+  'default': { width: 1.0, depth: 1.0, height: 1.0 }
 };
 

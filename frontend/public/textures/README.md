@@ -1,6 +1,6 @@
 # Texture Assets
 
-This folder contains all tileable texture images used in the 3D landscape viewer.
+This folder contains all tileable ure images used in the 3D landscape viewer.
 
 ## Folder Structure
 
