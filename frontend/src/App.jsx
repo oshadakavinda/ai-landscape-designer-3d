@@ -1,10 +1,12 @@
 import { useState } from 'react';
-import LayoutForm from './components/LayoutForm';
-import TopViewSvg from './components/TopViewSvg';
-import ThreeDLayout from './components/ThreeDLayout';
-import ScorePanel from './components/ScorePanel';
+import LayoutForm       from './components/sidebar/LayoutForm';
+import ObjectInspector  from './components/sidebar/ObjectInspector';
+import TopViewSvg       from './components/viewer2d/TopViewSvg';
+import ThreeDViewer     from './components/viewer3d/index';
+import ScorePanel       from './components/ScorePanel';
 import { generateLandscapeDesign } from './api/landscapeApi';
 import './index.css';
+
 
 export default function App() {
   const [layout, setLayout] = useState(null);
@@ -45,27 +47,9 @@ export default function App() {
           <div className="sidebar-top">
             <LayoutForm onGenerate={handleGenerate} isLoading={isLoading} />
           </div>
-          
-          {layout && (
-            <div className="sidebar-bottom object-inspector">
-              <h3>📍 Placed Objects</h3>
-              <div className="object-list">
-                <div className="object-row header">
-                  <span>Type</span>
-                  <span>Pos (X,Y)</span>
-                  <span>Size (WxD)</span>
-                </div>
-                {layout.objects.map((obj) => (
-                  <div key={obj.id} className="object-row">
-                    <span className="obj-type">{obj.type.replace('_', ' ')}</span>
-                    <span className="obj-pos">{obj.x}, {obj.y}</span>
-                    <span className="obj-size">{obj.width}x{obj.depth}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
+          <ObjectInspector layout={layout} />
         </aside>
+
 
 
         {/* ── Main Viewer ── */}
@@ -87,7 +71,7 @@ export default function App() {
             </button>
             {layout && (
               <span style={{ marginLeft: 'auto', fontSize: '0.72rem', color: 'var(--text-muted)' }}>
-                {layout.objects.length} objects placed
+                {layout.objects.length} objects · {(layout.pathways || []).length} paths
                 {layout.unplaced.length > 0 && ` · ${layout.unplaced.length} unplaced`}
               </span>
             )}
@@ -114,7 +98,7 @@ export default function App() {
             )}
 
             {layout && !isLoading && activeTab === '3d' && (
-              <ThreeDLayout layout={layout} />
+              <ThreeDViewer layout={layout} />
             )}
           </div>
 

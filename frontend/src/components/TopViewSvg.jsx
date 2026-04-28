@@ -1,12 +1,21 @@
 import { OBJECT_COLORS } from '../data/featureCatalog';
 
-const PADDING = 30; // svg padding px
+const PADDING = 30;
 const LABEL_FONT = 9;
+
+const MATERIAL_FILL = {
+  water:    '#1a4a6b',
+  grass:    '#2d5a1b',
+  flowers:  '#7a2e6b',
+  soil:     '#3d2010',
+  stone:    '#4a4540',
+  concrete: '#3a3a3a',
+};
 
 export default function TopViewSvg({ layout }) {
   if (!layout) return null;
 
-  const { land, house, objects = [], zones = [] } = layout;
+  const { land, house, objects = [], pathways = [], zones = [] } = layout;
   const SVG_W = 600;
   const SVG_H = 500;
 
@@ -14,16 +23,11 @@ export default function TopViewSvg({ layout }) {
   const scaleY = (SVG_H - PADDING * 2) / land.depth;
   const scale = Math.min(scaleX, scaleY);
 
-  // Convert world coords → svg coords (flip Y since SVG 0 is top-left)
   const wx = (x) => PADDING + x * scale;
   const wy = (y) => SVG_H - PADDING - y * scale;
 
   return (
-    <svg
-      viewBox={`0 0 ${SVG_W} ${SVG_H}`}
-      style={{ width: '100%', height: '100%', display: 'block' }}
-    >
-      {/* Grid */}
+    <svg viewBox={`0 0 ${SVG_W} ${SVG_H}`} style={{ width: '100%', height: '100%', display: 'block' }}>
       <defs>
         <pattern id="grid" width={scale} height={scale} patternUnits="userSpaceOnUse"
           x={PADDING} y={SVG_H - PADDING - land.depth * scale}>
@@ -36,48 +40,65 @@ export default function TopViewSvg({ layout }) {
         x={wx(0)} y={wy(land.depth)}
         width={land.width * scale} height={land.depth * scale}
         fill="url(#grid)"
-        stroke="#3a9a54"
-        strokeWidth="1.5"
-        rx="2"
+        stroke="#3a9a54" strokeWidth="1.5" rx="2"
       />
 
-      {/* Zones */}
+      {/* Zones (subtle overlay) */}
       {zones.map(z => (
         <rect key={z.id}
           x={wx(z.x)} y={wy(z.y + z.depth)}
           width={z.width * scale} height={z.depth * scale}
-          fill="rgba(99,190,123,0.06)"
-          stroke="rgba(99,190,123,0.2)"
-          strokeWidth="0.8"
+          fill="rgba(99,190,123,0.04)"
+          stroke="rgba(99,190,123,0.15)"
+          strokeWidth="0.6"
           strokeDasharray="4 3"
           rx="2"
         />
       ))}
 
-      {/* House */}
+      {/* House (drawn first as base) */}
       <rect
         x={wx(house.x)} y={wy(house.y + house.depth)}
         width={house.width * scale} height={house.depth * scale}
-        fill="#1e293b"
-        stroke="#94a3b8"
-        strokeWidth="1.5"
-        rx="2"
+        fill="#1e293b" stroke="#94a3b8" strokeWidth="1.5" rx="2"
       />
       <text
-        x={wx(house.x + house.width / 2)}
-        y={wy(house.y + house.depth / 2) + 4}
-        textAnchor="middle"
-        fill="#94a3b8"
-        fontSize={11}
-        fontWeight="600"
-        fontFamily="Inter, sans-serif"
+        x={wx(house.x + house.width / 2)} y={wy(house.y + house.depth / 2) + 4}
+        textAnchor="middle" fill="#94a3b8" fontSize={11} fontWeight="600" fontFamily="Inter, sans-serif"
       >
         HOUSE
       </text>
 
+      {/* Pathways */}
+      {pathways.map(pw => {
+        if (!pw.points || pw.points.length < 2) return null;
+        const pts = pw.points.map(([px, pz]) => `${wx(px)},${wy(pz)}`).join(' ');
+        return (
+          <g key={pw.id}>
+            <polyline
+              points={pts}
+              fill="none"
+              stroke={MATERIAL_FILL[pw.material] || '#4a4540'}
+              strokeWidth={pw.width * scale}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              opacity="0.85"
+            />
+            <polyline
+              points={pts}
+              fill="none"
+              stroke="rgba(255,255,255,0.15)"
+              strokeWidth="1"
+              strokeLinecap="round"
+              strokeDasharray="4 4"
+            />
+          </g>
+        );
+      })}
+
       {/* Objects */}
       {objects.map(obj => {
-        const color = OBJECT_COLORS[obj.type] || '#888';
+        const color = MATERIAL_FILL[obj.material] || OBJECT_COLORS[obj.type] || '#888';
         const x = wx(obj.x);
         const y = wy(obj.y + obj.depth);
         const w = obj.width * scale;
@@ -85,10 +106,7 @@ export default function TopViewSvg({ layout }) {
         return (
           <g key={obj.id}>
             <rect x={x} y={y} width={w} height={h}
-              fill={`${color}55`}
-              stroke={color}
-              strokeWidth="1"
-              rx="2"
+              fill={`${color}66`} stroke={color} strokeWidth="1" rx="2"
             >
               <title>{obj.type} ({obj.variant})</title>
             </rect>
@@ -107,7 +125,6 @@ export default function TopViewSvg({ layout }) {
           </g>
         );
       })}
-
 
       {/* Compass */}
       <g transform={`translate(${SVG_W - PADDING - 14}, ${PADDING + 14})`}>

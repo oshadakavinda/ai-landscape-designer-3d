@@ -8,10 +8,11 @@ Orchestrates:
 
 import os
 import json
-import time
 import google.generativeai as genai
 from app.models.input_schema import LandscapeDesignInput
-from app.models.layout_schema import LayoutOutput, LandOutput, HouseOutput, ScoresOutput, UnplacedOutput
+from app.models.layout_schema import (
+    LayoutOutput, LandOutput, HouseOutput, ZoneOutput, ScoresOutput, UnplacedOutput
+)
 from app.services.vastu_engine import get_vastu_prompt_guidelines
 from app.services.placement_engine import place_objects
 from app.services.scoring_engine import calculate_scores
@@ -39,12 +40,31 @@ def _load_catalog() -> dict:
 
 
 def _build_catalog_map(catalog: dict) -> dict:
-    """variant_id -> {width, depth}"""
+    """variant_id -> {width, depth, height, render_type, material}"""
     m = {}
     for feat in catalog.get("features", []):
         for v in feat.get("variants", []):
-            m[v["id"]] = {"width": v["width"], "depth": v["depth"]}
+            m[v["id"]] = {
+                "width":       v["width"],
+                "depth":       v["depth"],
+                "height":      v.get("height", 0.5),
+                "render_type": v.get("render_type", "model"),
+                "material":    v.get("material"),
+            }
     return m
+
+
+def _build_zones(land_w: float, land_d: float) -> list[ZoneOutput]:
+    """Generate the 9 standard compass zones as explicit objects."""
+    mid_x, mid_y = land_w / 2, land_d / 2
+    return [
+        ZoneOutput(id="north",      type="north",      x=0,     y=mid_y, width=land_w, depth=land_d - mid_y),
+        ZoneOutput(id="south",      type="south",      x=0,     y=0,     width=land_w, depth=mid_y),
+        ZoneOutput(id="east",       type="east",       x=mid_x, y=0,     width=land_w - mid_x, depth=land_d),
+        ZoneOutput(id="west",       type="west",       x=0,     y=0,     width=mid_x,  depth=land_d),
+        ZoneOutput(id="center",     type="center",     x=land_w * 0.2, y=land_d * 0.2,
+                   width=land_w * 0.6, depth=land_d * 0.6),
+    ]
 
 
 def _compact_catalog_text(catalog: dict, requested: list[str]) -> str:
@@ -65,6 +85,7 @@ def _fallback_layout(input_data: LandscapeDesignInput, reason: str) -> LayoutOut
             depth=input_data.land.depth,
             unit=input_data.land.unit,
             road_direction=input_data.road_direction,
+            ground_texture=input_data.ground_texture,
         ),
         house=HouseOutput(
             x=input_data.house.x,
@@ -78,6 +99,7 @@ def _fallback_layout(input_data: LandscapeDesignInput, reason: str) -> LayoutOut
         ),
         unplaced=[UnplacedOutput(type="system", reason=reason)],
         objects=[],
+        pathways=[],
         zones=[],
         recommendations=[],
     )
@@ -87,12 +109,10 @@ def _ask_llm(input_data: LandscapeDesignInput, catalog: dict) -> list[dict]:
     """
     Ask Gemini for placement intent only — a very short JSON array.
     Each item: {"type": "trees", "variant": "tree_oak_01", "zone": "north"}
-    No coordinates, no dimensions — the backend handles all of that.
     """
     vastu_hint = get_vastu_prompt_guidelines(input_data.vastu_priority, input_data.road_direction)
     cat_text = _compact_catalog_text(catalog, input_data.optional_features)
 
-    # Map road direction to which compass zone should have parking
     parking_hint = {
         "north": "south_west or south_east",
         "south": "south_west or south_east",
@@ -125,7 +145,6 @@ def _ask_llm(input_data: LandscapeDesignInput, catalog: dict) -> list[dict]:
     response = model.generate_content(prompt)
     text = response.text.strip()
 
-    # Strip markdown fences
     if text.startswith("```"):
         text = text.split("```")[1]
         if text.startswith("json"):
@@ -135,38 +154,65 @@ def _ask_llm(input_data: LandscapeDesignInput, catalog: dict) -> list[dict]:
     data = json.loads(text)
     if isinstance(data, list):
         return data
-    # LLM wrapped it in an object key
     for v in data.values():
         if isinstance(v, list):
             return v
     return []
 
 
+def _mock_intent(input_data: LandscapeDesignInput) -> list[dict]:
+    """
+    Build a mock intent that respects optional_features from the user's form.
+    Useful while LLM is disabled for testing.
+    """
+    VARIANT_MAP = {
+        "bench":           {"variant": "bench_wood_01",    "zone": "east"},
+        "pond":            {"variant": "pond_small_01",    "zone": "north_east"},
+        "fountain":        {"variant": "fountain_round_01","zone": "center"},
+        "trees":           {"variant": "tree_palm_01",     "zone": "north"},
+        "flower_beds":     {"variant": "flower_bed_rect_01","zone": "north_west"},
+        "vegetable_beds":  {"variant": "veg_bed_raised_01","zone": "west"},
+        "lawn":            {"variant": "lawn_patch_01",    "zone": "center"},
+        "pathway":         {"variant": "path_stone_01",    "zone": "south"},
+        "driveway":        {"variant": "driveway_paved_01","zone": "south"},
+        "garden_lights":   {"variant": "light_post_01",    "zone": "south_east"},
+        "seating_area":    {"variant": "seating_patio_01", "zone": "east"},
+        "open_car_park":   {"variant": "car_park_open_01", "zone": "south_east"},
+        "covered_car_park":{"variant": "car_park_covered_01","zone": "south_west"},
+    }
+    intent = []
+    for feature_type in input_data.optional_features:
+        entry = VARIANT_MAP.get(feature_type)
+        if entry:
+            intent.append({"type": feature_type, **entry})
+    # Ensure a pathway from road to house is always included
+    if "pathway" not in input_data.optional_features:
+        intent.append({"type": "pathway", "variant": "path_stone_01", "zone": "south"})
+    return intent
+
 
 def generate_layout(input_data: LandscapeDesignInput) -> LayoutOutput:
     catalog = _load_catalog()
     catalog_map = _build_catalog_map(catalog)
 
-    # MOCK intent for testing
-    intent = [
-        {"type": "trees", "variant": "tree_palm_01", "zone": "north"},
-        {"type": "lawn", "variant": "lawn_patch_01", "zone": "center"},
-        {"type": "bench", "variant": "bench_wood_01", "zone": "east"},
-        {"type": "pathway", "variant": "path_stone_01", "zone": "south"},
-        {"type": "open_car_park", "variant": "car_park_open_01", "zone": "south_east"}
-    ]
-    print("USING MOCK INTENT FOR TESTING")
+    # ── Intent: mock (respects user features) ─────────────────────────────
+    intent = _mock_intent(input_data)
+    print(f"MOCK INTENT ({len(intent)} items): {[i['type'] for i in intent]}")
 
+    # ── Placement ──────────────────────────────────────────────────────────
+    placed_objects, placed_pathways, unplaced_objects = place_objects(intent, catalog_map, input_data)
 
-    # Local optimizer does all coordinate placement
-    placed_objects, unplaced_objects = place_objects(intent, catalog_map, input_data)
+    # ── Zones ──────────────────────────────────────────────────────────────
+    zones = _build_zones(input_data.land.width, input_data.land.depth)
 
+    # ── Layout assembly ────────────────────────────────────────────────────
     layout = LayoutOutput(
         land=LandOutput(
             width=input_data.land.width,
             depth=input_data.land.depth,
             unit=input_data.land.unit,
             road_direction=input_data.road_direction,
+            ground_texture=input_data.ground_texture,
         ),
         house=HouseOutput(
             x=input_data.house.x,
@@ -174,16 +220,15 @@ def generate_layout(input_data: LandscapeDesignInput) -> LayoutOutput:
             width=input_data.house.width,
             depth=input_data.house.depth,
         ),
-        zones=[],  # zones are implicit via object zoneIds
+        zones=zones,
         objects=placed_objects,
+        pathways=placed_pathways,
         unplaced=unplaced_objects,
-        scores=ScoresOutput(
-            vastuScore=0, sustainabilityScore=0,
-            coolingScore=0, spaceUtilizationScore=0,
-        ),
+        scores=ScoresOutput(vastuScore=0, sustainabilityScore=0, coolingScore=0, spaceUtilizationScore=0),
         recommendations=[
             f"Vastu priority {input_data.vastu_priority}/10 applied.",
-            f"{len(placed_objects)} features placed, {len(unplaced_objects)} could not fit.",
+            f"{len(placed_objects)} features placed, {len(placed_pathways)} pathways routed, "
+            f"{len(unplaced_objects)} could not fit.",
         ],
     )
 

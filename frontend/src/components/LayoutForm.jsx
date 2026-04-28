@@ -8,8 +8,10 @@ const DEFAULT_FORM = {
   vastu_priority: 5,
   garden_style: 'family',
   vehicle_count: 1,
+  ground_texture: 'grass',
   optional_features: ['bench', 'trees', 'lawn', 'pathway'],
 };
+
 
 export default function LayoutForm({ onGenerate, isLoading }) {
   const [form, setForm] = useState(DEFAULT_FORM);
@@ -112,6 +114,17 @@ export default function LayoutForm({ onGenerate, isLoading }) {
           <label>Vehicles on Site</label>
           <select value={form.vehicle_count} onChange={e => setTop('vehicle_count', Number(e.target.value))}>
             {[0, 1, 2, 3, 4].map(n => <option key={n} value={n}>{n}</option>)}
+          </select>
+        </div>
+        <div className="form-group">
+          <label>Ground Texture</label>
+          <select value={form.ground_texture} onChange={e => setTop('ground_texture', e.target.value)}>
+            {[
+              { value: 'grass',        label: '🌿 Grass' },
+              { value: 'stone_paving', label: '🪨 Stone Paving' },
+              { value: 'bare_earth',   label: '🟤 Bare Earth' },
+              { value: 'mixed',        label: '🎨 Mixed' },
+            ].map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
           </select>
         </div>
         <div className="form-group">

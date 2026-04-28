@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, validator
 from typing import List, Optional, Literal
 
 class LandInput(BaseModel):
@@ -20,3 +20,14 @@ class LandscapeDesignInput(BaseModel):
     garden_style: Literal["minimal", "family", "luxury", "agriculture", "mixed"]
     vehicle_count: int = Field(..., ge=0, le=4)
     optional_features: List[str] = Field(default_factory=list)
+    ground_texture: Literal["grass", "stone_paving", "bare_earth", "mixed"] = "grass"
+
+    @validator("house")
+    def house_fits_land(cls, house, values):
+        land = values.get("land")
+        if land:
+            if house.x + house.width > land.width:
+                raise ValueError(f"House exceeds land width: {house.x + house.width} > {land.width}")
+            if house.y + house.depth > land.depth:
+                raise ValueError(f"House exceeds land depth: {house.y + house.depth} > {land.depth}")
+        return house

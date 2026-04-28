@@ -7,10 +7,11 @@ The LLM provides only high-level intent:
 
 This module converts that intent into exact (x, y, width, depth) coordinates
 by scanning the land grid and finding valid non-overlapping positions.
+Pathways are a special case: they are routed as point arrays, not boxes.
 """
 
 from app.models.input_schema import LandscapeDesignInput
-from app.models.layout_schema import ObjectOutput, UnplacedOutput
+from app.models.layout_schema import ObjectOutput, PathwayOutput, UnplacedOutput
 
 SPACING = 0.5  # minimum gap between any two objects
 
@@ -18,17 +19,16 @@ SPACING = 0.5  # minimum gap between any two objects
 def _zone_bounds(zone: str, land_w: float, land_d: float) -> tuple[float, float, float, float]:
     """Return (x_min, y_min, x_max, y_max) for a named compass zone."""
     mid_x, mid_y = land_w / 2, land_d / 2
-    # North = high Y, South = low Y (origin bottom-left)
     zones = {
-        "north":     (0,      mid_y, land_w, land_d),
-        "south":     (0,      0,     land_w, mid_y),
-        "east":      (mid_x,  0,     land_w, land_d),
-        "west":      (0,      0,     mid_x,  land_d),
-        "north_east": (mid_x, mid_y, land_w, land_d),
-        "north_west": (0,     mid_y, mid_x,  land_d),
-        "south_east": (mid_x, 0,     land_w, mid_y),
-        "south_west": (0,     0,     mid_x,  mid_y),
-        "center":    (land_w * 0.2, land_d * 0.2, land_w * 0.8, land_d * 0.8),
+        "north":      (0,      mid_y, land_w, land_d),
+        "south":      (0,      0,     land_w, mid_y),
+        "east":       (mid_x,  0,     land_w, land_d),
+        "west":       (0,      0,     mid_x,  land_d),
+        "north_east": (mid_x,  mid_y, land_w, land_d),
+        "north_west": (0,      mid_y, mid_x,  land_d),
+        "south_east": (mid_x,  0,     land_w, mid_y),
+        "south_west": (0,      0,     mid_x,  mid_y),
+        "center":     (land_w * 0.2, land_d * 0.2, land_w * 0.8, land_d * 0.8),
     }
     return zones.get(zone, (0, 0, land_w, land_d))
 
@@ -58,14 +58,11 @@ def _try_place(
     while x + obj_w <= x_max and x + obj_w <= land_w:
         y = y_min
         while y + obj_d <= y_max and y + obj_d <= land_d:
-            # Check house
             if not _overlaps(x, y, obj_w, obj_d, house.x, house.y, house.width, house.depth):
-                # Check all already-placed objects
-                ok = True
-                for p in placed:
-                    if _overlaps(x, y, obj_w, obj_d, p["x"], p["y"], p["w"], p["d"]):
-                        ok = False
-                        break
+                ok = all(
+                    not _overlaps(x, y, obj_w, obj_d, p["x"], p["y"], p["w"], p["d"])
+                    for p in placed
+                )
                 if ok:
                     return x, y
             y += step
@@ -73,42 +70,107 @@ def _try_place(
     return None
 
 
+def _route_pathway(
+    variant: str,
+    path_width: float,
+    zone: str,
+    land_w: float,
+    land_d: float,
+    house,
+    road_direction: str,
+    material: str,
+    idx: int,
+) -> PathwayOutput | None:
+    """
+    Route a pathway from the road-facing edge of the land toward the house entrance.
+    Returns a PathwayOutput with waypoints, or None if routing fails.
+    """
+    # Determine road-side start point
+    if road_direction == "south":
+        start = (house.x + house.width / 2, 0.0)
+        end = (house.x + house.width / 2, house.y)
+    elif road_direction == "north":
+        start = (house.x + house.width / 2, land_d)
+        end = (house.x + house.width / 2, house.y + house.depth)
+    elif road_direction == "east":
+        start = (land_w, house.y + house.depth / 2)
+        end = (house.x + house.width, house.y + house.depth / 2)
+    else:  # west
+        start = (0.0, house.y + house.depth / 2)
+        end = (house.x, house.y + house.depth / 2)
+
+    # Simple straight-line route — future: add L-shaped routing
+    points = [start, end]
+
+    return PathwayOutput(
+        id=f"path_{idx:03d}",
+        variant=variant,
+        points=points,
+        width=path_width,
+        material=material or "stone",
+    )
+
+
 def place_objects(
     intent: list[dict],
     catalog_map: dict,
     input_data: LandscapeDesignInput,
-) -> tuple[list[ObjectOutput], list[UnplacedOutput]]:
+) -> tuple[list[ObjectOutput], list[PathwayOutput], list[UnplacedOutput]]:
     """
     Given LLM intent + catalog dimensions, compute exact object coordinates.
-    Returns (placed_objects, unplaced_objects).
+    Returns (placed_objects, placed_pathways, unplaced_objects).
     """
     land_w = input_data.land.width
     land_d = input_data.land.depth
     house = input_data.house
     road = input_data.road_direction
 
-    placed_rects: list[dict] = []  # {"x","y","w","d"} for overlap checks
+    placed_rects: list[dict] = []
     placed: list[ObjectOutput] = []
+    pathways: list[PathwayOutput] = []
     unplaced: list[UnplacedOutput] = []
 
-    # Fallback zone order — try preferred zone first, then adjacent, then anywhere
     FALLBACK_ORDER = ["north", "south", "east", "west",
                       "north_east", "north_west", "south_east", "south_west", "center"]
 
+    path_count = 0
     for idx, item in enumerate(intent):
         obj_type = item.get("type", "unknown")
         variant = item.get("variant", "")
         preferred_zone = item.get("zone", "").lower().replace(" ", "_")
 
-        # Look up dimensions
         dims = catalog_map.get(variant)
         if not dims:
             unplaced.append(UnplacedOutput(type=obj_type, reason=f"Variant '{variant}' not in catalog."))
             continue
 
-        obj_w, obj_d = dims["width"], dims["depth"]
+        obj_w = dims["width"]
+        obj_d = dims["depth"]
+        height = dims.get("height", 0.5)
+        render_type = dims.get("render_type", "model")
+        material = dims.get("material")
 
-        # Build zone try-order
+        # ── Pathways: routed, not grid-placed ──────────────────────────────
+        if render_type == "path":
+            path_count += 1
+            pw = _route_pathway(
+                variant=variant,
+                path_width=obj_w,
+                zone=preferred_zone,
+                land_w=land_w,
+                land_d=land_d,
+                house=house,
+                road_direction=road,
+                material=material,
+                idx=path_count,
+            )
+            if pw:
+                pathways.append(pw)
+            else:
+                unplaced.append(UnplacedOutput(type=obj_type, reason="Could not route pathway."))
+            continue
+
+        # ── All other objects: grid placement ──────────────────────────────
         zones_to_try = [preferred_zone] if preferred_zone else []
         for z in FALLBACK_ORDER:
             if z not in zones_to_try:
@@ -134,8 +196,11 @@ def place_objects(
             y=round(y, 2),
             width=obj_w,
             depth=obj_d,
+            height=height,
             rotation=0.0,
             zoneId=preferred_zone or "general",
+            render_type=render_type,
+            material=material,
         ))
 
-    return placed, unplaced
+    return placed, pathways, unplaced
