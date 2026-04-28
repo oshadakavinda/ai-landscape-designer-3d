@@ -48,12 +48,12 @@ export const MATERIAL_COLORS = {
   concrete: '#3a3a3a',
 };
 
-/** Ground texture type → dark base color (fallback when no texture file is loaded) */
+/** Ground type → solid colour used directly (no texture files needed) */
 export const GROUND_BASE_COLORS = {
-  grass:        '#0d1c0a',
-  stone_paving: '#252220',
-  bare_earth:   '#1c1208',
-  mixed:        '#121a0e',
+  grass:        '#4a7c3f',
+  stone_paving: '#6b6560',
+  bare_earth:   '#7a5c3a',
+  mixed:        '#556b45',
 };
 
 /** Minimal lift amount (meters) to prevent Z-fighting with the ground plane */

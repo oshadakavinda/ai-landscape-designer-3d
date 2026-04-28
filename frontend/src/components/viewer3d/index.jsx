@@ -59,21 +59,14 @@ export default function ThreeDViewer({ layout }) {
 
       {/* ── Scene elements ── */}
       {/* Ground renders immediately and loads texture imperatively in background */}
-      <Suspense fallback={
-        <mesh position={[land.width / 2, 0, land.depth / 2]} rotation={[-Math.PI / 2, 0, 0]}>
-          <planeGeometry args={[land.width, land.depth]} />
-          <meshStandardMaterial color="red" />
-        </mesh>
-      }>
-        <Ground land={land} />
-      </Suspense>
+      <Ground land={land} />
 
       <Suspense fallback={null}>
         <LandBoundary land={land} />
         <Road land={land} direction={land.road_direction} />
 
         <Grid
-          position={[land.width / 2, 0.01, land.depth / 2]}
+          position={[land.width / 2, 0.04, land.depth / 2]}
           args={[land.width, land.depth]}
           cellSize={1}
           cellThickness={0.4}
