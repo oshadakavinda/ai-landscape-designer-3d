@@ -56,8 +56,11 @@ export const GROUND_BASE_COLORS = {
   mixed:        '#556b45',
 };
 
-/** Minimal lift amount (meters) to prevent Z-fighting with the ground plane */
-export const LIFT = 0.02;
+/** Absolute height of the ground plane */
+export const GROUND_HEIGHT = 0.03;
+
+/** Minimal lift amount (meters) to prevent Z-fighting with surfaces */
+export const LIFT = 0.01;
 
 /** Fixed height (meters) for architectural elements that should not scale vertically */
 export const ARCHITECTURAL_HEIGHT = 2.0;

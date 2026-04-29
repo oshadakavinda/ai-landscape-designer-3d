@@ -8,6 +8,7 @@
 import { Suspense } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, Grid } from '@react-three/drei';
+import { GROUND_HEIGHT } from '../../constants/renderConfig';
 
 import Ground from './scene/Ground';
 import LandBoundary from './scene/LandBoundary';
@@ -66,7 +67,7 @@ export default function ThreeDViewer({ layout }) {
         <Road land={land} direction={land.road_direction} />
 
         <Grid
-          position={[land.width / 2, 0.04, land.depth / 2]}
+          position={[land.width / 2, GROUND_HEIGHT + 0.01, land.depth / 2]}
           args={[land.width, land.depth]}
           cellSize={1}
           cellThickness={0.4}

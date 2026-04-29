@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import * as THREE from 'three';
-import { GROUND_BASE_COLORS } from '../../../constants/renderConfig';
+import { GROUND_BASE_COLORS, GROUND_HEIGHT } from '../../../constants/renderConfig';
 import { GROUND_TEXTURES, GROUND_TILE_SIZE } from '../../../constants/texturePaths';
 
 // Module-level cache — texture survives re-renders and tab switches
@@ -45,7 +45,7 @@ export default function Ground({ land }) {
   return (
     <mesh
       receiveShadow
-      position={[land.width / 2, 0.03, land.depth / 2]}
+      position={[land.width / 2, GROUND_HEIGHT, land.depth / 2]}
       rotation={[-Math.PI / 2, 0, 0]}
     >
       <planeGeometry args={[land.width, land.depth]} />

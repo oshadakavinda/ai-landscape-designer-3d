@@ -1,4 +1,4 @@
-import { MATERIAL_COLORS, OBJECT_FALLBACK_COLORS, FALLBACK_HEIGHTS, LIFT } from '../../../constants/renderConfig';
+import { MATERIAL_COLORS, OBJECT_FALLBACK_COLORS, FALLBACK_HEIGHTS, LIFT, GROUND_HEIGHT } from '../../../constants/renderConfig';
 import { SURFACE_TEXTURES, SURFACE_TILE_SIZE } from '../../../constants/texturePaths';
 import { useSceneTexture } from '../../../hooks/useSceneTexture';
 
@@ -30,7 +30,7 @@ export default function FlatObject({ obj }) {
   const isWater = obj.material === 'water';
 
   return (
-    <mesh position={[cx, h / 2 + LIFT, cz]} castShadow receiveShadow>
+    <mesh position={[cx, GROUND_HEIGHT + h / 2 + LIFT, cz]} castShadow receiveShadow>
       <boxGeometry args={[obj.width, h, obj.depth]} />
       <meshStandardMaterial
         map={texture}

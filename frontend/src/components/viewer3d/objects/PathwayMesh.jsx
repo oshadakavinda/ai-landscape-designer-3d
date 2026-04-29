@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { MATERIAL_COLORS } from '../../../constants/renderConfig';
+import { MATERIAL_COLORS, GROUND_HEIGHT, LIFT } from '../../../constants/renderConfig';
 
 /**
  * PathwayMesh
@@ -33,7 +33,7 @@ export default function PathwayMesh({ pathway }) {
   return (
     <>
       {segments.map((s, i) => (
-        <mesh key={i} position={[s.cx, 0.03, s.cz]} rotation={[0, s.angle, 0]} receiveShadow>
+        <mesh key={i} position={[s.cx, GROUND_HEIGHT + LIFT, s.cz]} rotation={[0, s.angle, 0]} receiveShadow>
           <boxGeometry args={[pathway.width, 0.05, s.len]} />
           <meshStandardMaterial color={color} roughness={0.9} />
         </mesh>

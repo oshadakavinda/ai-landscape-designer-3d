@@ -33,6 +33,7 @@ export function useSceneTexture(path, repeatX = 1, repeatZ = 1) {
         tex.wrapS = THREE.RepeatWrapping;
         tex.wrapT = THREE.RepeatWrapping;
         tex.repeat.set(repeatX, repeatZ);
+        tex.colorSpace = THREE.SRGBColorSpace;
         tex.needsUpdate = true;
         setTexture(tex);
       },
