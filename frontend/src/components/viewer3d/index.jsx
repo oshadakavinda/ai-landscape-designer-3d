@@ -1,14 +1,19 @@
 /**
  * viewer3d/index.jsx
  * Main 3D Canvas entry point.
- * 
+ *
  * This file owns only the <Canvas> setup, lighting, and scene composition.
  * All sub-components are imported from scene/ and objects/ folders.
+ *
+ * Props:
+ *   layout   — the generated landscape data object
+ *   walkMode — boolean; when true, switches to first-person WalkControls
  */
 import { Suspense } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, Grid } from '@react-three/drei';
 import { GROUND_HEIGHT } from '../../constants/renderConfig';
+import WalkControls from './controls/WalkControls';
 
 import Ground from './scene/Ground';
 import LandBoundary from './scene/LandBoundary';
@@ -17,7 +22,7 @@ import House from './scene/House';
 import LandscapeObject from './objects/LandscapeObject';
 import PathwayMesh from './objects/PathwayMesh';
 
-export default function ThreeDViewer({ layout }) {
+export default function ThreeDViewer({ layout, walkMode = false }) {
   if (!layout) return null;
 
   const { land, house, objects = [], pathways = [] } = layout;
@@ -28,8 +33,10 @@ export default function ThreeDViewer({ layout }) {
     <Canvas
       shadows
       camera={{
-        position: [land.width * 1.2, land.depth * 0.9, land.depth * 1.4],
-        fov: 50,
+        position: walkMode
+          ? [land.width / 2, GROUND_HEIGHT + 1.7, land.depth / 2 + land.depth * 0.35]
+          : [land.width * 1.2, land.depth * 0.9, land.depth * 1.4],
+        fov: walkMode ? 75 : 50,
         near: 0.1,
         far: 1000,
       }}
@@ -48,12 +55,16 @@ export default function ThreeDViewer({ layout }) {
       <pointLight position={[land.width / 2, 8, land.depth / 2]} intensity={0.3} color="#63be7b" />
 
       {/* ── Controls ── */}
-      <OrbitControls
-        target={camTarget}
-        maxPolarAngle={Math.PI / 2.1}
-        minDistance={5}
-        maxDistance={maxDim * 3}
-      />
+      {walkMode ? (
+        <WalkControls land={land} house={house} objects={objects} />
+      ) : (
+        <OrbitControls
+          target={camTarget}
+          maxPolarAngle={Math.PI / 2.1}
+          minDistance={5}
+          maxDistance={maxDim * 3}
+        />
+      )}
 
       {/* ── Ambient sky (replaces Environment preset="night") ── */}
       <hemisphereLight skyColor="#1a2a3a" groundColor="#0a1a0a" intensity={0.6} />
