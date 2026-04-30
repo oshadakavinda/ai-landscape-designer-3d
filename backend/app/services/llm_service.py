@@ -5,6 +5,19 @@ from google.genai import types
 from fastapi import HTTPException
 from app.models.input_schema import LandscapeDesignInput
 
+def _save_last_request(system_prompt: str, user_prompt: str):
+    """Save the last prompt and system instruction to a JSON file for debugging."""
+    path = os.path.join(os.path.dirname(__file__), "..", "data", "last_llm_request.json")
+    try:
+        with open(path, "w") as f:
+            json.dump({
+                "system_instruction": system_prompt,
+                "contents": user_prompt
+            }, f, indent=2)
+    except Exception as e:
+        print(f"Failed to save last request: {e}")
+
+
 def get_gemini_response(input_data: LandscapeDesignInput):
     # Load prompt from JSON
     prompt_path = os.path.join(os.path.dirname(__file__), "..", "data", "prompts.json")
@@ -27,7 +40,7 @@ def get_gemini_response(input_data: LandscapeDesignInput):
         "{house_d}": str(input_data.house.depth),
         "{vastu_priority}": str(input_data.vastu_priority),
         "{vehicle_count}": str(input_data.vehicle_count),
-        "{features}": ", ".join(input_data.optional_features)
+        "{features}": ", ".join(f"{k} x{v}" for k, v in input_data.optional_features.items())
     }
     
     user_prompt = user_template
@@ -39,9 +52,14 @@ def get_gemini_response(input_data: LandscapeDesignInput):
     if not api_key:
         return "Error: GEMINI_API_KEY not found in environment."
     
-    client = genai.Client(api_key=api_key)
+    client = genai.Client(
+        api_key=api_key,
+        http_options=types.HttpOptions(retry_options=types.HttpRetryOptions(attempts=1))
+    )
+    _save_last_request(system_prompt, user_prompt)
 
     try:
+
         response = client.models.generate_content(
             model="gemini-2.5-flash",
             contents=user_prompt,
@@ -58,3 +76,24 @@ def get_gemini_response(input_data: LandscapeDesignInput):
             raise HTTPException(status_code=400, detail="Invalid Gemini API key. Please check your .env file.")
         raise HTTPException(status_code=500, detail=f"LLM error: {str(e)}")
 
+
+def test_gemini_direct(prompt: str):
+    """Simple direct test for Gemini connectivity."""
+    api_key = os.getenv("GEMINI_API_KEY")
+    if not api_key:
+        return "Error: GEMINI_API_KEY not found."
+    
+    client = genai.Client(
+        api_key=api_key,
+        http_options=types.HttpOptions(retry_options=types.HttpRetryOptions(attempts=1))
+    )
+    _save_last_request("Direct Test (No System Prompt)", prompt)
+    try:
+
+        response = client.models.generate_content(
+            model="gemini-2.5-flash",
+            contents=prompt
+        )
+        return response.text
+    except Exception as e:
+        return f"Error: {str(e)}"

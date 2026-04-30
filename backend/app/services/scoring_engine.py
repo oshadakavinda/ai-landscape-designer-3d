@@ -21,7 +21,11 @@ def calculate_scores(layout, input_data: LandscapeDesignInput) -> ScoresOutput:
     house_area = input_data.house.width * input_data.house.depth
 
     used_area = house_area
+    if input_data.car_park:
+        used_area += input_data.car_park.width * input_data.car_park.depth
+    
     green_area = 0.0
+
     cool_area = 0.0
     vastu_hits = 0
     vastu_total = 0

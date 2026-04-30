@@ -36,3 +36,10 @@ async def modify_design(body: ModifyDesignInput):
 async def test_llm_endpoint(input_data: LandscapeDesignInput):
     response = get_gemini_response(input_data)
     return {"response": response}
+
+@app.get("/api/test-llm-direct")
+async def test_llm_direct(prompt: str = "hello"):
+    from app.services.llm_service import test_gemini_direct
+    response = test_gemini_direct(prompt)
+    return {"response": response}
+

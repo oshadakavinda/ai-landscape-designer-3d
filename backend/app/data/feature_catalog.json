@@ -10,8 +10,7 @@
     {
       "type": "pond",
       "variants": [
-        {"id": "pond_small_01", "width": 2.5, "depth": 2.5, "height": 0.1, "render_type": "flat", "material": "water"},
-        {"id": "pond_large_01", "width": 4.0, "depth": 3.0, "height": 0.1, "render_type": "flat", "material": "water"}
+        {"id": "pond_small_01", "width": 2.5, "depth": 2.5, "height": 0.1, "render_type": "flat", "material": "water"}
       ]
     },
     {
@@ -23,20 +22,15 @@
     {
       "type": "trees",
       "variants": [
-        {"id": "tree_oak_01", "width": 4.0, "depth": 4.0, "height": 5.0, "render_type": "model", "material": null},
         {"id": "tree_palm_01", "width": 4.0, "depth": 4.0, "height": 6.0, "render_type": "model", "material": null}
       ]
     },
     {
       "type": "flower_beds",
       "variants": [
-        {"id": "flower_bed_rect_01", "width": 3.0, "depth": 1.0, "height": 0.15, "render_type": "flat", "material": "flowers"}
-      ]
-    },
-    {
-      "type": "vegetable_beds",
-      "variants": [
-        {"id": "veg_bed_raised_01", "width": 2.0, "depth": 1.0, "height": 0.3, "render_type": "model", "material": "soil"}
+        {"id": "flower_bed_rect_01", "width": 3.0, "depth": 1.0, "height": 0.15, "render_type": "flat", "material": "flowers"},
+        {"id": "flower_bed_rect_02", "width": 1.0, "depth": 2.0, "height": 0.1, "render_type": "flat", "material": "flowers"},
+        {"id": "flower_bed_round_01", "width": 0.5, "depth": 0.5, "height": 0.1, "render_type": "flat", "material": "flowers"}
       ]
     },
     {
@@ -48,38 +42,13 @@
     {
       "type": "pathway",
       "variants": [
-        {"id": "path_stone_01", "width": 1.2, "depth": 1.2, "height": 0.05, "render_type": "path", "material": "stone"},
-        {"id": "path_concrete_01", "width": 1.5, "depth": 1.5, "height": 0.05, "render_type": "path", "material": "concrete"}
-      ]
-    },
-    {
-      "type": "driveway",
-      "variants": [
-        {"id": "driveway_paved_01", "width": 3.0, "depth": 6.0, "height": 0.05, "render_type": "flat", "material": "concrete"}
-      ]
-    },
-    {
-      "type": "garden_lights",
-      "variants": [
-        {"id": "light_post_01", "width": 0.2, "depth": 0.2, "height": 2.0, "render_type": "model", "material": null}
-      ]
-    },
-    {
-      "type": "seating_area",
-      "variants": [
-        {"id": "seating_patio_01", "width": 4.0, "depth": 4.0, "height": 0.05, "render_type": "flat", "material": "stone"}
+        {"id": "path_stone_01", "width": 1.2, "depth": 1.2, "height": 0.05, "render_type": "path", "material": "stone"}
       ]
     },
     {
       "type": "open_car_park",
       "variants": [
         {"id": "car_park_open_01", "width": 3.0, "depth": 5.5, "height": 0.05, "render_type": "flat", "material": "concrete"}
-      ]
-    },
-    {
-      "type": "covered_car_park",
-      "variants": [
-        {"id": "car_park_covered_01", "width": 3.5, "depth": 6.0, "height": 2.0, "render_type": "model", "material": null}
       ]
     }
   ]

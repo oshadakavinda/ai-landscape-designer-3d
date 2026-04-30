@@ -19,8 +19,10 @@ import Ground from './scene/Ground';
 import LandBoundary from './scene/LandBoundary';
 import Road from './scene/Road';
 import House from './scene/House';
+import Garage from './scene/Garage';
 import LandscapeObject from './objects/LandscapeObject';
 import PathwayMesh from './objects/PathwayMesh';
+
 
 export default function ThreeDViewer({ layout, walkMode = false }) {
   if (!layout) return null;
@@ -56,8 +58,9 @@ export default function ThreeDViewer({ layout, walkMode = false }) {
 
       {/* ── Controls ── */}
       {walkMode ? (
-        <WalkControls land={land} house={house} objects={objects} />
+        <WalkControls land={land} house={house} car_park={layout.car_park} objects={objects} />
       ) : (
+
         <OrbitControls
           target={camTarget}
           maxPolarAngle={Math.PI / 2.1}
@@ -100,9 +103,38 @@ export default function ThreeDViewer({ layout, walkMode = false }) {
           <LandscapeObject key={obj.id} obj={obj} />
         ))}
 
+        {/* ── Car Park ── */}
+        {layout.car_park && (
+          layout.car_park.type === 'covered' ? (
+            <Garage 
+              x={layout.car_park.x} 
+              y={layout.car_park.y} 
+              width={layout.car_park.width} 
+              depth={layout.car_park.depth} 
+              numVehicles={Math.round(layout.car_park.width / 3.0)} 
+              rotation={layout.car_park.rotation}
+            />
+          ) : (
+            <mesh 
+              position={[
+                layout.car_park.x + layout.car_park.width / 2, 
+                GROUND_HEIGHT + 0.02, 
+                layout.car_park.y + layout.car_park.depth / 2
+              ]} 
+              rotation={[0, (layout.car_park.rotation * Math.PI) / 180, 0]}
+              receiveShadow
+            >
+              <boxGeometry args={[layout.car_park.width, 0.05, layout.car_park.depth]} />
+              <meshStandardMaterial color="#64748b" roughness={0.9} />
+            </mesh>
+          )
+        )}
+
+
         {/* ── House (drawn last so it's always on top) ── */}
         <House house={house} />
       </Suspense>
     </Canvas>
   );
 }
+

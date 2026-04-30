@@ -8,7 +8,7 @@ import { LIFT, GROUND_HEIGHT } from '../../../constants/renderConfig';
  * without stretching architectural features like windows and doors.
  */
 export default function House({ house }) {
-  const { width, depth, x, y } = house;
+  const { width, depth, x, y, rotation = 0 } = house;
   
   // Center position
   const cx = x + width / 2;
@@ -38,7 +38,11 @@ export default function House({ house }) {
   }), [depth]);
 
   return (
-    <group position={[cx, GROUND_HEIGHT + LIFT, cz]}>
+    <group 
+      position={[cx, GROUND_HEIGHT + LIFT, cz]}
+      rotation={[0, THREE.MathUtils.degToRad(rotation), 0]}
+    >
+
       {/* Main Building Body */}
       <mesh position={[0, houseHeight / 2, 0]} castShadow receiveShadow>
         <boxGeometry args={[width, houseHeight, depth]} />

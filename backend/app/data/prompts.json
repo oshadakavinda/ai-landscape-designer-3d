@@ -1,4 +1,55 @@
 {
   "system_prompt": "You generate landscape layouts as JSON. Focus on object placements only. Do not include explanations.",
-  "user_prompt_template": "Land:{width}x{depth}{unit}. House@({house_x},{house_y}) size {house_w}x{house_d}. Road:{road_direction}. Style:{garden_style}. Vastu:{vastu_priority}. Vehicles:{vehicle_count}. Features:{features}. \n\nRules:\n- Origin(0,0)=SW\n- No overlap (house/objects)\n- Stay inside land\n- Min spacing 0.5m\n- Path: road→house\n- Parking near road if vehicles>0\n- Vastu: pond NE, trees N/E, avoid heavy NE\n- Use placement hints (bench→path, trees→boundary)\n\nReturn JSON:\n{\n\"objects\":[{\"id\":\"\",\"type\":\"\",\"variant\":\"\",\"x\":0,\"y\":0,\"rotation\":0,\"zoneId\":\"\"}],\n\"pathways\":[{\"id\":\"\",\"points\":[[x,y]],\"width\":1.2}],\n\"parking\":{\"x\":0,\"y\":0,\"vehicleCount\":0},\n\"unplaced\":[]\n}\n\nNo dimensions. JSON only."
+  "user_prompt_template": "Land:{width}x{depth}{unit}. House@({house_x},{house_y}) size {house_w}x{house_d}. Road:{road_direction}. Style:{garden_style}. Vastu:{vastu_priority}. Vehicles:{vehicle_count}. Features:{features}. \n\nRules:\n- Origin(0,0)=SW\n- No overlap (house/objects)\n- Stay inside land\n- Min spacing 0.5m\n- Path: road\u2192house\n- Parking near road if vehicles>0\n- Vastu: pond NE, trees N/E, avoid heavy NE\n- Use placement hints (bench\u2192path, trees\u2192boundary)\n\nReturn JSON:\n{\"objects\":[{\"id\":\"\",\"type\":\"\",\"variant\":\"\",\"x\":0,\"y\":0,\"rotation\":0,\"zoneId\":\"\"}],\"pathways\":[{\"id\":\"\",\"points\":[[x,y]],\"width\":1.2}],\"parking\":{\"x\":0,\"y\":0,\"vehicleCount\":0},\"unplaced\":[]}\n\nNo dimensions. JSON only.",
+
+  "intent_system_prompt": "You are a landscape zone planner. Return ONLY a JSON array of placement intents — no markdown, no explanation.",
+  "intent_prompt_template": "Land: {width}x{depth}{unit} | House at ({house_x},{house_y}) size {house_w}x{house_d} | Car Park: {car_park_info} | Road: {road_direction} | Style: {garden_style} | Vehicles: {vehicle_count}\nFeatures requested ({features_count} types): {features}\nVastu priority {vastu_priority}/10: {vastu_hint}\nParking preferred zone: {parking_hint}\n\nAvailable items (type | variantId | W x D metres):\n{available_items}\n\nRules:\n- Use ONLY variant IDs listed above\n- Do NOT include the house or car park in the output\n- Assign sensible zones based on the style and vastu rules\n- zone must be one of: north, south, east, west, north_east, north_west, south_east, south_west, center\n\nReturn ONLY a JSON array, nothing else:\n[{\"type\": \"string\", \"variant\": \"string\", \"zone\": \"string\"}]",
+
+  "available_items": [
+    {
+      "type": "bench",
+      "variants": [
+        { "id": "bench_wood_01",  "width": 2.0, "depth": 1.0 },
+        { "id": "bench_stone_01", "width": 2.0, "depth": 0.7 }
+      ]
+    },
+    {
+      "type": "pond",
+      "variants": [
+        { "id": "pond_small_01", "width": 2.5, "depth": 2.5 }
+      ]
+    },
+    {
+      "type": "fountain",
+      "variants": [
+        { "id": "fountain_round_01", "width": 1.5, "depth": 1.5 }
+      ]
+    },
+    {
+      "type": "trees",
+      "variants": [
+        { "id": "tree_palm_01", "width": 4.0, "depth": 4.0 }
+      ]
+    },
+    {
+      "type": "flower_beds",
+      "variants": [
+        { "id": "flower_bed_rect_01", "width": 3.0, "depth": 1.0 },
+        { "id": "flower_bed_rect_02", "width": 1.0, "depth": 2.0 },
+        { "id": "flower_bed_round_01", "width": 0.5, "depth": 0.5 }
+      ]
+    },
+    {
+      "type": "lawn",
+      "variants": [
+        { "id": "lawn_patch_01", "width": 5.0, "depth": 5.0 }
+      ]
+    },
+    {
+      "type": "pathway",
+      "variants": [
+        { "id": "path_stone_01", "width": 1.2, "depth": 1.2 }
+      ]
+    }
+  ]
 }

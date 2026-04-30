@@ -28,17 +28,34 @@ const SOLID_TYPES = new Set([
 ]);
 
 // ─── Build padded AABB colliders from house + objects ─────────────────────────
-function buildColliders(house, objects) {
+function buildColliders(house, car_park, objects) {
   const boxes = [];
   const pad = PLAYER_RADIUS;
 
   if (house) {
+    // If house is rotated 90 or 270 degrees, swap visual width/depth for collision
+    const isRotatedSide = Math.abs(house.rotation % 180) > 45 && Math.abs(house.rotation % 180) < 135;
+    const w = isRotatedSide ? house.depth : house.width;
+    const d = isRotatedSide ? house.width : house.depth;
+    
     boxes.push({
-      minX: house.x     - pad,
-      maxX: house.x + house.width  + pad,
-      minZ: house.y     - pad,
-      maxZ: house.y + house.depth  + pad,
+      minX: house.x - pad,
+      maxX: house.x + w + pad,
+      minZ: house.y - pad,
+      maxZ: house.y + d + pad,
     });
+  }
+
+  if (car_park) {
+    // Only covered car parks are solid (player can walk on open ones)
+    if (car_park.type === 'covered' || car_park.type === 'garage') {
+      boxes.push({
+        minX: car_park.x - pad,
+        maxX: car_park.x + car_park.width + pad,
+        minZ: car_park.y - pad,
+        maxZ: car_park.y + car_park.depth + pad,
+      });
+    }
   }
 
   for (const obj of objects) {
@@ -64,29 +81,50 @@ function insideAny(x, z, boxes) {
 }
 
 // ─── Component ────────────────────────────────────────────────────────────────
-export default function WalkControls({ land, house, objects = [] }) {
+export default function WalkControls({ land, house, car_park, objects = [] }) {
+
   const { camera, gl } = useThree();
 
   const keys      = useRef({});
   const yaw       = useRef(Math.PI);
   const pitch     = useRef(-0.15);
   const isLocked  = useRef(false);
-  const colliders = useRef(buildColliders(house, objects));
+  const colliders = useRef(buildColliders(house, car_park, objects));
 
   // Rebuild colliders if layout changes
   useEffect(() => {
-    colliders.current = buildColliders(house, objects);
-  }, [house, objects]);
+    colliders.current = buildColliders(house, car_park, objects);
+  }, [house, car_park, objects]);
+
 
   // ── Teleport to a good starting position inside the plot ──────────────────
   useEffect(() => {
-    const startX = land.width / 2;
-    const startZ = Math.min(land.depth - EDGE_MARGIN, land.depth * 0.8);
+    let startX = land.width / 2;
+    let startZ = Math.min(land.depth - EDGE_MARGIN, land.depth * 0.8);
+    
+    const boxes = colliders.current;
+    
+    // If blocked, try a few offsets to find a safe spot
+    if (insideAny(startX, startZ, boxes)) {
+      const offsets = [
+        [2, 0], [-2, 0], [0, -2], [0, 2],
+        [4, 0], [-4, 0], [0, -4], [0, 4]
+      ];
+      for (const [ox, oz] of offsets) {
+        if (!insideAny(startX + ox, startZ + oz, boxes)) {
+          startX += ox;
+          startZ += oz;
+          break;
+        }
+      }
+    }
+
     camera.position.set(startX, GROUND_HEIGHT + EYE_HEIGHT, startZ);
     camera.fov = 75;
     camera.updateProjectionMatrix();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
 
   // ── Pointer Lock setup ────────────────────────────────────────────────────
   useEffect(() => {

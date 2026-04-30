@@ -14,8 +14,8 @@ export default function App() {
   const [activeTab, setActiveTab] = useState('2d');
   const [error, setError] = useState(null);
   // Track whether 3D has ever been opened — so we lazy-mount once and keep alive
-  const [has3dMounted, setHas3dMounted] = useState(false);
-  const [lastFormData, setLastFormData] = useState(null);
+  const [has3dMounted, setHas3dMounted] = useState(false);  const [lastFormData, setLastFormData] = useState(null);
+  const [lastRequest, setLastRequest] = useState(null);
   // Walk mode state
   const [walkMode, setWalkMode] = useState(false);
   const [showWalkHud, setShowWalkHud] = useState(false);
@@ -57,6 +57,7 @@ export default function App() {
     setIsLoading(true);
     setError(null);
     setWalkMode(false);
+    setLastRequest(formData); // Store the request payload
     try {
       const result = await generateLandscapeDesign(formData);
       setLayout(result);
@@ -93,6 +94,8 @@ export default function App() {
     if (!layout || !lastFormData) return;
     setIsLoading(true);
     setError(null);
+    const modifyPayload = { layout, prompt, lastFormData };
+    setLastRequest(modifyPayload); // Store modification request
     try {
       const result = await modifyLandscapeDesign(layout, prompt, lastFormData);
       setLayout(result);
@@ -162,6 +165,13 @@ export default function App() {
             >
               🚶 Walk
             </button>
+            <button
+              className={`view-tab ${activeTab === 'debug' ? 'active' : ''}`}
+              onClick={() => { setActiveTab('debug'); setWalkMode(false); }}
+              title="View last JSON request sent to API"
+            >
+              ⌨️ Request
+            </button>
             {layout && (
               <span style={{ marginLeft: 'auto', fontSize: '0.72rem', color: 'var(--text-muted)' }}>
                 {layout.objects.length} objects · {(layout.pathways || []).length} paths
@@ -183,6 +193,21 @@ export default function App() {
               <div className="empty-state">
                 <div style={{ fontSize: '2.5rem', animation: 'spin 1.5s linear infinite' }}>🌀</div>
                 <p style={{ color: 'var(--accent-green)' }}>Gemini is designing your landscape…</p>
+              </div>
+            )}
+
+            {/* Request Payload View */}
+            {activeTab === 'debug' && (
+              <div className="debug-viewer">
+                <div className="debug-header">
+                  <h3>JSON Request Payload</h3>
+                  <button className="btn-copy" onClick={() => navigator.clipboard.writeText(JSON.stringify(lastRequest, null, 2))}>
+                    📋 Copy JSON
+                  </button>
+                </div>
+                <pre className="debug-code">
+                  {lastRequest ? JSON.stringify(lastRequest, null, 2) : '// No request sent yet'}
+                </pre>
               </div>
             )}
 
