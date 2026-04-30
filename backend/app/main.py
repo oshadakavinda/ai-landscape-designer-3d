@@ -18,10 +18,18 @@ app.add_middleware(
 )
 
 from app.services.llm_service import get_gemini_response
+from app.models.modify_schema import ModifyDesignInput
+from app.services.modify_engine import modify_layout
 
 @app.post("/api/generate", response_model=LayoutOutput)
 async def generate_design(input_data: LandscapeDesignInput):
     layout = generate_layout(input_data)
+    return layout
+
+@app.post("/api/modify", response_model=LayoutOutput)
+async def modify_design(body: ModifyDesignInput):
+    """Modify an existing layout based on a natural language prompt."""
+    layout = modify_layout(body.current_layout, body.user_prompt, body.input_data)
     return layout
 
 @app.post("/api/test-llm")

@@ -4,7 +4,8 @@ import ObjectInspector from './components/sidebar/ObjectInspector';
 import TopViewSvg from './components/viewer2d/TopViewSvg';
 import ThreeDViewer from './components/viewer3d/index';
 import ScorePanel from './components/ScorePanel';
-import { generateLandscapeDesign } from './api/landscapeApi';
+import ChatPrompt from './components/ChatPrompt';
+import { generateLandscapeDesign, modifyLandscapeDesign } from './api/landscapeApi';
 import exampleLayout from './data/exampleLayout.json';
 
 export default function App() {
@@ -14,6 +15,7 @@ export default function App() {
   const [error, setError] = useState(null);
   // Track whether 3D has ever been opened — so we lazy-mount once and keep alive
   const [has3dMounted, setHas3dMounted] = useState(false);
+  const [lastFormData, setLastFormData] = useState(null);
 
   const handleUseExample = () => {
     setLayout(exampleLayout);
@@ -27,6 +29,7 @@ export default function App() {
     try {
       const result = await generateLandscapeDesign(formData);
       setLayout(result);
+      setLastFormData(formData);
       setActiveTab('2d');
     } catch (err) {
       setError(
@@ -34,6 +37,25 @@ export default function App() {
         err?.message ||
         'Failed to connect to the backend. Is the server running?'
       );
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleModify = async (prompt) => {
+    if (!layout || !lastFormData) return;
+    setIsLoading(true);
+    setError(null);
+    try {
+      const result = await modifyLandscapeDesign(layout, prompt, lastFormData);
+      setLayout(result);
+    } catch (err) {
+      setError(
+        err?.response?.data?.detail ||
+        err?.message ||
+        'Failed to modify the design. Is the server running?'
+      );
+      throw err; // re-throw so ChatPrompt can show error status
     } finally {
       setIsLoading(false);
     }
@@ -151,6 +173,9 @@ export default function App() {
               ))}
             </div>
           )}
+
+          {/* Chat Prompt */}
+          <ChatPrompt onModify={handleModify} isLoading={isLoading} hasLayout={!!layout} />
 
           {/* Scores */}
           <ScorePanel scores={layout?.scores} />

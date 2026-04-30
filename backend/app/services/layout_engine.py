@@ -8,7 +8,7 @@ Orchestrates:
 
 import os
 import json
-import google.generativeai as genai
+from google import genai
 from app.models.input_schema import LandscapeDesignInput
 from app.models.layout_schema import (
     LayoutOutput, LandOutput, HouseOutput, ZoneOutput, ScoresOutput, UnplacedOutput
@@ -17,17 +17,15 @@ from app.services.vastu_engine import get_vastu_prompt_guidelines
 from app.services.placement_engine import place_objects
 from app.services.scoring_engine import calculate_scores
 
-_gemini_model = None
+_client = None
 
 
-def get_model():
-    global _gemini_model
-    if _gemini_model is None:
+def _get_client():
+    global _client
+    if _client is None:
         api_key = os.getenv("GEMINI_API_KEY")
-        if api_key:
-            genai.configure(api_key=api_key)
-        _gemini_model = genai.GenerativeModel("gemini-2.5-flash")
-    return _gemini_model
+        _client = genai.Client(api_key=api_key)
+    return _client
 
 
 def _load_catalog() -> dict:
@@ -141,8 +139,11 @@ def _ask_llm(input_data: LandscapeDesignInput, catalog: dict) -> list[dict]:
         "Return only the JSON array, nothing else."
     )
 
-    model = get_model()
-    response = model.generate_content(prompt)
+    client = _get_client()
+    response = client.models.generate_content(
+        model="gemini-2.5-flash",
+        contents=prompt,
+    )
     text = response.text.strip()
 
     if text.startswith("```"):

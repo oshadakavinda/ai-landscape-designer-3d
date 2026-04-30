@@ -11,3 +11,18 @@ export const generateLandscapeDesign = async (inputData) => {
         throw error;
     }
 };
+
+export const modifyLandscapeDesign = async (currentLayout, userPrompt, inputData) => {
+    try {
+        const response = await axios.post(`${API_BASE_URL}/modify`, {
+            current_layout: currentLayout,
+            user_prompt: userPrompt,
+            input_data: inputData,
+        });
+        return response.data;
+    } catch (error) {
+        console.error("Error modifying design:", error);
+        throw error;
+    }
+};
+
