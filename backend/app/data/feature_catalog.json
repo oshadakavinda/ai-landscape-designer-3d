@@ -28,9 +28,9 @@
     {
       "type": "flower_beds",
       "variants": [
-        {"id": "flower_bed_rect_01", "width": 3.0, "depth": 1.0, "height": 0.15, "render_type": "flat", "material": "flowers"},
-        {"id": "flower_bed_rect_02", "width": 1.0, "depth": 2.0, "height": 0.1, "render_type": "flat", "material": "flowers"},
-        {"id": "flower_bed_round_01", "width": 0.5, "depth": 0.5, "height": 0.1, "render_type": "flat", "material": "flowers"}
+        {"id": "flower_bed_rect_01", "width": 3.0, "depth": 1.0, "height": 0.15, "render_type": "model", "material": "flowers"},
+        {"id": "flower_bed_rect_02", "width": 1.0, "depth": 2.0, "height": 0.1, "render_type": "model", "material": "flowers"},
+        {"id": "flower_bed_round_01", "width": 0.5, "depth": 0.5, "height": 0.1, "render_type": "model", "material": "flowers"}
       ]
     },
     {
