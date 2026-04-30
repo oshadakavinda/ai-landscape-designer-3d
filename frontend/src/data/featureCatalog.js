@@ -48,7 +48,7 @@ export const MODEL_PATHS = {
   'bench_wood_01': '/models/bench/bench_wood_01.glb',
   'bench_stone_01': '/models/bench/bench_stone_01.glb',
   'pond_small_01': '/models/pond/pond_small_01.glb',
-  'tree_palm_01': '/models/trees/tree_palm_01.glb',
+  'tree_palm_01': '/models/trees/maple_tree.glb',
   'car_park_open_01': '/models/car_park/car_park_open_01.glb',
   'flower_bed_rect_01': '/models/flower_beds/flower_bed_rect_01.glb',
   'flower_bed_rect_02': '/models/flower_beds/flower_bed_rect_02.glb',
