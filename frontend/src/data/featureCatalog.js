@@ -58,8 +58,8 @@ export const MODEL_PATHS = {
 };
 
 export const OBJECT_DIMENSIONS = {
-  'bench_wood_01': { width: 1.5, depth: 0.6, height: 0.5 },
-  'bench_stone_01': { width: 1.8, depth: 0.7, height: 0.6 },
+  'bench_wood_01': { width: 3.0, depth: 1.2, height: 1.0 },
+  'bench_stone_01': { width: 3.5, depth: 1.4, height: 1.2 },
   'pond_small_01': { width: 4.0, depth: 4.0, height: 0.3 },
   'tree_palm_01': { width: 2.0, depth: 2.0, height: 5.0 },
   'car_park_open_01': { width: 3.0, depth: 5.5, height: 0.1 },
