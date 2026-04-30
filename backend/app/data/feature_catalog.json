@@ -10,7 +10,7 @@
     {
       "type": "pond",
       "variants": [
-        {"id": "pond_small_01", "width": 2.5, "depth": 2.5, "height": 0.1, "render_type": "flat", "material": "water"}
+        {"id": "pond_small_01", "width": 2.5, "depth": 2.5, "height": 0.1, "render_type": "model", "material": "water"}
       ]
     },
     {
