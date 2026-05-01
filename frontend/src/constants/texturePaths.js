@@ -36,6 +36,14 @@ export const GROUND_TEXTURES = {
 };
 
 /**
+ * Wall texture paths.
+ */
+export const WALL_TEXTURES = {
+  brick: '/textures/brick_wall.png',
+  concrete: '/textures/concrete_texture.jpg',
+};
+
+/**
  * Surface material texture paths.
  * Applied to flat objects (lawn patches, ponds, driveways, seating areas, etc.).
  * Keys match the `material` field on each ObjectOutput.
@@ -61,12 +69,12 @@ export const SURFACE_TEXTURES = {
  * Larger land = more repeats to keep the texture looking right.
  * Formula used: repeat = landDimension / TILE_SIZE
  */
-export const GROUND_TILE_SIZE = 2; // meters per tile repeat
+export const GROUND_TILE_SIZE = 4; // meters per tile repeat
 
 /**
  * Tiling repeat scale for surface material textures.
  */
-export const SURFACE_TILE_SIZE = 2; // meters per tile repeat
+export const SURFACE_TILE_SIZE = 4; // meters per tile repeat
 
 /**
  * Road textures.

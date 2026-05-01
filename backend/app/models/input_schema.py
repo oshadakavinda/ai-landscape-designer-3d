@@ -31,6 +31,7 @@ class LandscapeDesignInput(BaseModel):
     vehicle_count: int = Field(..., ge=0, le=4)
     optional_features: Dict[str, int] = Field(default_factory=dict)  # feature_type -> count
     ground_texture: Literal["grass", "stone_paving", "bare_earth", "mixed"] = "grass"
+    wall_texture: Literal["brick", "concrete"] = "brick"
 
     @validator("house", "car_park")
     def objects_fit_land(cls, obj, values):

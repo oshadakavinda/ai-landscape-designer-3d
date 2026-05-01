@@ -114,6 +114,7 @@ def _fallback_layout(input_data: LandscapeDesignInput, reason: str) -> LayoutOut
             unit=input_data.land.unit,
             road_direction=input_data.road_direction,
             ground_texture=input_data.ground_texture,
+            wall_texture=input_data.wall_texture,
         ),
         house=HouseOutput(
             x=input_data.house.x,
@@ -294,6 +295,7 @@ def generate_layout(input_data: LandscapeDesignInput) -> LayoutOutput:
             unit=input_data.land.unit,
             road_direction=input_data.road_direction,
             ground_texture=input_data.ground_texture,
+            wall_texture=input_data.wall_texture,
         ),
         house=HouseOutput(
             x=input_data.house.x,

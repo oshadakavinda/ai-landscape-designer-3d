@@ -7,6 +7,7 @@ class LandOutput(BaseModel):
     unit: str
     road_direction: str = "south"
     ground_texture: str = "grass"
+    wall_texture: str = "brick"
 
 class HouseOutput(BaseModel):
     x: float
