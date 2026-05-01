@@ -43,8 +43,14 @@ function BoxFallback({ obj, cx, cz }) {
  */
 export default function LandscapeObject({ obj }) {
   const dims       = OBJECT_DIMENSIONS[obj.variant] || OBJECT_DIMENSIONS['default'];
-  const cx         = obj.x + dims.width / 2;
-  const cz         = obj.y + dims.depth / 2;
+  const rot        = obj.rotation || 0;
+  const isSwapped  = Math.abs(rot) === 90 || Math.abs(rot) === 270;
+  
+  const w          = isSwapped ? dims.depth : dims.width;
+  const d          = isSwapped ? dims.width : dims.depth;
+
+  const cx         = obj.x + w / 2;
+  const cz         = obj.y + d / 2;
   const renderType = obj.render_type || 'model';
 
   // ── Flat plane objects ──────────────────────────────────────────────────

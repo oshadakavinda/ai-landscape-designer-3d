@@ -53,6 +53,15 @@ class PathwayOutput(BaseModel):
     width: float = 1.2
     material: str = "stone"
 
+class GateOutput(BaseModel):
+    id: str
+    variant: str
+    x: float
+    y: float
+    width: float
+    depth: float
+    rotation: float = 0.0
+
 class UnplacedOutput(BaseModel):
     type: str
     reason: str
@@ -67,6 +76,7 @@ class LayoutOutput(BaseModel):
     land: LandOutput
     house: HouseOutput
     car_park: Optional[CarParkOutput] = None
+    gate: Optional[GateOutput] = None
     zones: List[ZoneOutput] = Field(default_factory=list)
     objects: List[ObjectOutput] = Field(default_factory=list)
     pathways: List[PathwayOutput] = Field(default_factory=list)

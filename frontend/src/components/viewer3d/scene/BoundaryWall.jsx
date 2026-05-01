@@ -135,9 +135,9 @@ function SolidWall({ wallCenter, wallLength, wallY, capY, isHorizontal, hRepeat,
 }
 
 // ─── Split wall with gate opening ────────────────────────────────────────────
-function SplitWall({ wallLength, fixedCoord, wallY, capY, isHorizontal, gateWidth, hRepeatFn, vRepeat }) {
+function SplitWall({ wallLength, fixedCoord, wallY, capY, isHorizontal, gateWidth, hRepeatFn, vRepeat, mid: customMid }) {
   const halfGate = gateWidth / 2;
-  const mid = wallLength / 2;
+  const mid = customMid ?? (wallLength / 2);
 
   // Left segment: from 0 to (mid - halfGate)
   const leftLen = mid - halfGate;
@@ -226,7 +226,10 @@ function SplitWall({ wallLength, fixedCoord, wallY, capY, isHorizontal, gateWidt
 }
 
 // ─── Main component ──────────────────────────────────────────────────────────
-export default function BoundaryWall({ land, gateWidth = 3 }) {
+export default function BoundaryWall({ land, gate }) {
+  // Use gate from layout if provided, otherwise default to land center
+  const gateWidth = gate ? gate.width : 3.5;
+  
   const w = land.width;
   const d = land.depth;
   const road = land.road_direction || 'south';
@@ -238,6 +241,16 @@ export default function BoundaryWall({ land, gateWidth = 3 }) {
 
   // Determine gate position and rotation based on road direction
   const gateConfig = useMemo(() => {
+    if (gate) {
+      return { 
+        pos: [gate.x + gate.width/2, GROUND_HEIGHT, gate.y + gate.depth/2], 
+        rot: road === 'north' ? [0, Math.PI, 0] : 
+             road === 'east' ? [0, -Math.PI / 2, 0] : 
+             road === 'west' ? [0, Math.PI / 2, 0] : [0, 0, 0]
+      };
+    }
+    
+    // Fallback if no gate is provided in layout
     switch (road) {
       case 'south':
         return { pos: [w / 2, GROUND_HEIGHT, 0], rot: [0, 0, 0] };
@@ -250,7 +263,7 @@ export default function BoundaryWall({ land, gateWidth = 3 }) {
       default:
         return { pos: [w / 2, GROUND_HEIGHT, 0], rot: [0, 0, 0] };
     }
-  }, [road, w, d]);
+  }, [road, w, d, gate]);
 
   // Helper: is a given wall the road-facing one?
   const isRoadWall = (side) => side === road;
@@ -262,6 +275,8 @@ export default function BoundaryWall({ land, gateWidth = 3 }) {
         <SplitWall
           wallLength={w} fixedCoord={d} wallY={wallY} capY={capY}
           isHorizontal gateWidth={gateWidth} hRepeatFn={hRepeat} vRepeat={vRepeat}
+          // Custom split position for non-centered gate
+          mid={gate ? (gate.x + gate.width/2) : (w/2)} 
         />
       ) : (
         <SolidWall
@@ -275,6 +290,7 @@ export default function BoundaryWall({ land, gateWidth = 3 }) {
         <SplitWall
           wallLength={w} fixedCoord={0} wallY={wallY} capY={capY}
           isHorizontal gateWidth={gateWidth} hRepeatFn={hRepeat} vRepeat={vRepeat}
+          mid={gate ? (gate.x + gate.width/2) : (w/2)}
         />
       ) : (
         <SolidWall
@@ -288,6 +304,7 @@ export default function BoundaryWall({ land, gateWidth = 3 }) {
         <SplitWall
           wallLength={d} fixedCoord={0} wallY={wallY} capY={capY}
           isHorizontal={false} gateWidth={gateWidth} hRepeatFn={hRepeat} vRepeat={vRepeat}
+          mid={gate ? (gate.y + gate.depth/2) : (d/2)}
         />
       ) : (
         <SolidWall
@@ -301,6 +318,7 @@ export default function BoundaryWall({ land, gateWidth = 3 }) {
         <SplitWall
           wallLength={d} fixedCoord={w} wallY={wallY} capY={capY}
           isHorizontal={false} gateWidth={gateWidth} hRepeatFn={hRepeat} vRepeat={vRepeat}
+          mid={gate ? (gate.y + gate.depth/2) : (d/2)}
         />
       ) : (
         <SolidWall
