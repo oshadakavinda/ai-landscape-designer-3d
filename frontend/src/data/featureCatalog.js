@@ -55,7 +55,7 @@ export const MODEL_PATHS = {
   'path_stone_01': '/models/decor/path_stone_01.glb',
   'well_01': '/models/well/stone_well_stylized.glb',
   'bush_01': '/models/bush/small_bush.glb',
-  'maple_tree': '/models/trees/maple_tree.glb',
+  'maple_tree': '/models/trees/maple_tree_1.glb',
   'pine_tree': '/models/trees/pine_tree.glb',
   'oak_tree': '/models/trees/oak_tree.glb',
   'empty_garden': '/models/vegetable_beds/empty_garden.glb',
