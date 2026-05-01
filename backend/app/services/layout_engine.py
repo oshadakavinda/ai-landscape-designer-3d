@@ -12,7 +12,7 @@ from google import genai
 from google.genai import types
 from app.models.input_schema import LandscapeDesignInput
 from app.models.layout_schema import (
-    LayoutOutput, LandOutput, HouseOutput, ZoneOutput, ScoresOutput, UnplacedOutput, CarParkOutput
+    LayoutOutput, LandOutput, HouseOutput, ZoneOutput, ScoresOutput, UnplacedOutput, CarParkOutput, GateOutput
 )
 from app.services.vastu_engine import get_vastu_prompt_guidelines
 from app.services.placement_engine import place_objects
@@ -47,7 +47,7 @@ def _load_prompts() -> dict:
         return json.load(f)
 
 
-def _build_available_items_text(prompts: dict, requested: dict) -> str:
+def _build_available_items_text(prompts: dict, requested: dict, car_park: any = None) -> str:
     """Build a compact catalog string from prompts.json available_items, filtered to requested types."""
     lines = []
     for item in prompts.get("available_items", []):
@@ -55,6 +55,12 @@ def _build_available_items_text(prompts: dict, requested: dict) -> str:
             count = requested[item["type"]]
             for v in item["variants"]:
                 lines.append(f"{item['type']} (x{count}) | {v['id']} | {v['width']}x{v['depth']}m")
+    
+    # Add car park if present
+    if car_park:
+        variant_id = "car_park_covered_01" if car_park.type == "covered" else "car_park_open_01"
+        lines.append(f"car_park (x1) | {variant_id} | {car_park.width}x{car_park.depth}m")
+        
     return "\n".join(lines) if lines else "(none)"
 
 
@@ -164,7 +170,7 @@ def _ask_llm(input_data: LandscapeDesignInput, catalog: dict) -> list[dict]:
         "west":  "south_west or north_west",
     }.get(input_data.road_direction, "south")
 
-    available_items_text = _build_available_items_text(prompts, input_data.optional_features)
+    available_items_text = _build_available_items_text(prompts, input_data.optional_features, input_data.car_park)
     features_count = len(input_data.optional_features)
     
     cp = input_data.car_park
@@ -176,6 +182,8 @@ def _ask_llm(input_data: LandscapeDesignInput, catalog: dict) -> list[dict]:
     )
 
     template = prompts.get("intent_prompt_template", "")
+    if isinstance(template, list):
+        template = "\n".join(template)
     replacements = {
         "{width}":          str(input_data.land.width),
         "{depth}":          str(input_data.land.depth),
@@ -282,7 +290,7 @@ def generate_layout(input_data: LandscapeDesignInput) -> LayoutOutput:
         print(f"MOCK INTENT ({len(intent)} items): {[i['type'] for i in intent]}")
 
     # ── Placement ──────────────────────────────────────────────────────────
-    placed_objects, placed_pathways, unplaced_objects, car_park_rect = place_objects(intent, catalog_map, input_data)
+    placed_objects, placed_pathways, unplaced_objects, car_park_rect, gate_data = place_objects(intent, catalog_map, input_data)
 
     # ── Zones ──────────────────────────────────────────────────────────────
     zones = _build_zones(input_data.land.width, input_data.land.depth)
@@ -305,6 +313,7 @@ def generate_layout(input_data: LandscapeDesignInput) -> LayoutOutput:
             rotation=house_rot,
         ),
         car_park=CarParkOutput(**car_park_rect) if car_park_rect else None,
+        gate=GateOutput(**gate_data) if gate_data else None,
         zones=zones,
         objects=placed_objects,
         pathways=placed_pathways,

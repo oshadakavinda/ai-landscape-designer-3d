@@ -23,42 +23,43 @@ const PILLAR_W   = 0.2;  // pillar cross-section
 const WALL_T     = 0.15; // wall thickness
 
 export default function Garage({ x, y, width, depth, numVehicles = 1, rotation = 0 }) {
-  // Use provided width/depth if available, otherwise compute from vehicle count
-  // Width is ALWAYS derived from vehicle count — the catalog width is per-bay only
-  const gWidth = numVehicles * BAY_WIDTH;
-  const gDepth = depth || BAY_DEPTH;
+  // Calculate visual center based on logical swapped bounds if rotated
+  const isSwapped = Math.abs(rotation) === 90 || Math.abs(rotation) === 270;
+  const swappedW = isSwapped ? depth : width;
+  const swappedD = isSwapped ? width : depth;
 
-  const cx = x + gWidth / 2;
-  const cz = y + gDepth / 2;
+  const cx = x + swappedW / 2;
+  const cz = y + swappedD / 2;
 
   // Shed roof: flat polygon extruded along depth
   const roofProfile = useMemo(() => {
     const s = new THREE.Shape();
-    s.moveTo(-gWidth / 2 - 0.1, WALL_H);              // front-left eave
-    s.lineTo( gWidth / 2 + 0.1, WALL_H);              // front-right eave
-    s.lineTo( gWidth / 2 + 0.1, WALL_H + ROOF_RISE);  // back-right ridge
-    s.lineTo(-gWidth / 2 - 0.1, WALL_H + ROOF_RISE);  // back-left ridge
-    s.lineTo(-gWidth / 2 - 0.1, WALL_H);
+    s.moveTo(-width / 2 - 0.1, WALL_H);              // front-left eave
+    s.lineTo( width / 2 + 0.1, WALL_H);              // front-right eave
+    s.lineTo( width / 2 + 0.1, WALL_H + ROOF_RISE);  // back-right ridge
+    s.lineTo(-width / 2 - 0.1, WALL_H + ROOF_RISE);  // back-left ridge
+    s.lineTo(-width / 2 - 0.1, WALL_H);
     return s;
-  }, [gWidth]);
+  }, [width]);
 
   const roofExtrude = useMemo(() => ({
     steps: 1,
-    depth: gDepth + 0.2,
+    depth: depth + 0.2,
     bevelEnabled: false,
-  }), [gDepth]);
+  }), [depth]);
 
   // Compute pillar X positions (one per bay boundary)
   const pillarXs = useMemo(() => {
     const xs = [];
+    const bayWidth = width / numVehicles;
     for (let i = 0; i <= numVehicles; i++) {
-      xs.push(-gWidth / 2 + i * BAY_WIDTH);
+      xs.push(-width / 2 + i * bayWidth);
     }
     return xs;
-  }, [numVehicles, gWidth]);
+  }, [numVehicles, width]);
 
   // Garage door colour (corrugated steel look)
-  const doorW = BAY_WIDTH - PILLAR_W - 0.05;
+  const doorW = (width / numVehicles) - PILLAR_W - 0.05;
 
   return (
     <group
@@ -66,8 +67,8 @@ export default function Garage({ x, y, width, depth, numVehicles = 1, rotation =
       rotation={[0, (rotation * Math.PI) / 180, 0]}
     >
       {/* ── Back wall ── */}
-      <mesh position={[0, WALL_H / 2, -gDepth / 2 + WALL_T / 2]} castShadow receiveShadow>
-        <boxGeometry args={[gWidth + PILLAR_W, WALL_H, WALL_T]} />
+      <mesh position={[0, WALL_H / 2, -depth / 2 + WALL_T / 2]} castShadow receiveShadow>
+        <boxGeometry args={[width + PILLAR_W, WALL_H, WALL_T]} />
         <meshStandardMaterial color="#94a3b8" roughness={0.85} />
       </mesh>
 
@@ -75,17 +76,17 @@ export default function Garage({ x, y, width, depth, numVehicles = 1, rotation =
       {[-1, 1].map(side => (
         <mesh
           key={side}
-          position={[side * (gWidth / 2 - WALL_T / 2 + PILLAR_W / 2), WALL_H / 2, 0]}
+          position={[side * (width / 2 - WALL_T / 2 + PILLAR_W / 2), WALL_H / 2, 0]}
           castShadow receiveShadow
         >
-          <boxGeometry args={[WALL_T, WALL_H, gDepth]} />
+          <boxGeometry args={[WALL_T, WALL_H, depth]} />
           <meshStandardMaterial color="#94a3b8" roughness={0.85} />
         </mesh>
       ))}
 
       {/* ── Front pillars (one per bay boundary) ── */}
       {pillarXs.map((px, i) => (
-        <mesh key={i} position={[px, WALL_H / 2, gDepth / 2 - PILLAR_W / 2]} castShadow receiveShadow>
+        <mesh key={i} position={[px, WALL_H / 2, depth / 2 - PILLAR_W / 2]} castShadow receiveShadow>
           <boxGeometry args={[PILLAR_W, WALL_H, PILLAR_W]} />
           <meshStandardMaterial color="#64748b" roughness={0.6} metalness={0.2} />
         </mesh>
@@ -93,9 +94,10 @@ export default function Garage({ x, y, width, depth, numVehicles = 1, rotation =
 
       {/* ── Garage doors (one per bay, front-facing) ── */}
       {Array.from({ length: numVehicles }).map((_, i) => {
-        const doorX = -gWidth / 2 + i * BAY_WIDTH + BAY_WIDTH / 2;
+        const bayWidth = width / numVehicles;
+        const doorX = -width / 2 + i * bayWidth + bayWidth / 2;
         return (
-          <group key={i} position={[doorX, 0, gDepth / 2]}>
+          <group key={i} position={[doorX, 0, depth / 2]}>
             {/* Main door panel */}
             <mesh position={[0, WALL_H * 0.45, 0.02]} castShadow>
               <boxGeometry args={[doorW, WALL_H * 0.9, 0.05]} />
@@ -113,14 +115,14 @@ export default function Garage({ x, y, width, depth, numVehicles = 1, rotation =
       })}
 
       {/* ── Shed roof ── */}
-      <mesh position={[0, 0, -gDepth / 2 - 0.1]} castShadow>
+      <mesh position={[0, 0, -depth / 2 - 0.1]} castShadow>
         <extrudeGeometry args={[roofProfile, roofExtrude]} />
         <meshStandardMaterial color="#1e293b" roughness={0.5} metalness={0.1} />
       </mesh>
 
       {/* ── Concrete floor slab ── */}
       <mesh position={[0, -0.03, 0]} receiveShadow>
-        <boxGeometry args={[gWidth, 0.06, gDepth]} />
+        <boxGeometry args={[width, 0.06, depth]} />
         <meshStandardMaterial color="#475569" roughness={0.95} />
       </mesh>
     </group>

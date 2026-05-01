@@ -26,6 +26,8 @@ def get_gemini_response(input_data: LandscapeDesignInput):
     
     system_prompt = prompts.get("system_prompt", "")
     user_template = prompts.get("user_prompt_template", "")
+    if isinstance(user_template, list):
+        user_template = "\n".join(user_template)
 
     # Format the user prompt safely
     replacements = {

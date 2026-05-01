@@ -51,7 +51,7 @@ export const MODEL_PATHS = {
   'bench_wood_01': '/models/bench/bench_wood_01.glb',
   'bench_stone_01': '/models/bench/bench_stone_01.glb',
   'pond_small_01': '/models/pond/pond_small_01.glb',
-  'tree_palm_01': '/models/trees/maple_tree.glb',
+  'tree_palm_01': '/models/trees/tree_palm_01.glb',
   'car_park_open_01': '/models/car_park/car_park_open_01.glb',
   'flower_bed_rect_01': '/models/flower_beds/flower_bed_rect_01.glb',
   'flower_bed_rect_02': '/models/flower_beds/flower_bed_rect_02.glb',
@@ -60,13 +60,15 @@ export const MODEL_PATHS = {
   'path_stone_01': '/models/decor/path_stone_01.glb',
   'well_01': '/models/well/stone_well_stylized.glb',
   'bush_01': '/models/bush/small_bush.glb',
+  'maple_tree': '/models/trees/maple_tree.glb',
 };
 
 export const OBJECT_DIMENSIONS = {
   'bench_wood_01': { width: 3.0, depth: 1.2, height: 1.0 },
   'bench_stone_01': { width: 3.5, depth: 1.4, height: 1.2 },
   'pond_small_01': { width: 4.0, depth: 4.0, height: 0.3 },
-  'tree_palm_01': { width: 2.0, depth: 2.0, height: 5.0 },
+  'tree_palm_01': { width: 8.0, depth: 8.0, height: 8.0 },
+  'maple_tree': { width: 4.0, depth: 4.0, height: 8.0 },
   'car_park_open_01': { width: 3.0, depth: 5.5, height: 0.1 },
   'bush_01': { width: 1.0, depth: 1.0, height: 1.0 },
   'flower_bed_rect_01': { width: 3.0, depth: 1.5, height: 0.4 },

@@ -44,12 +44,19 @@ def _summarise_current_layout(layout: LayoutOutput) -> str:
         pts = " → ".join(f"({p[0]},{p[1]})" for p in pw.points)
         lines.append(f"  {pw.id}: pathway variant={pw.variant}, width={pw.width}, route={pts}")
 
+    if layout.car_park:
+        cp = layout.car_park
+        lines.append(f"  car_park: type={cp.type}, pos=({cp.x},{cp.y}), size={cp.width}x{cp.depth}, rotation={cp.rotation}")
+    if layout.gate:
+        g = layout.gate
+        lines.append(f"  gate: variant={g.variant}, pos=({g.x},{g.y})")
+
     return (
         f"Land: {layout.land.width}x{layout.land.depth}{layout.land.unit}, "
         f"road={layout.land.road_direction}, ground={layout.land.ground_texture}\n"
         f"House: pos=({layout.house.x},{layout.house.y}), "
         f"size={layout.house.width}x{layout.house.depth}\n"
-        f"Objects & Pathways ({len(layout.objects)} objects, {len(layout.pathways)} paths):\n"
+        f"Objects, Pathways, Gate & Car Park:\n"
         + "\n".join(lines)
     )
 
@@ -87,8 +94,10 @@ def _build_modify_prompt(
         "  zone must be: north, south, east, west, north_east, north_west, south_east, south_west, center\n"
         "- 'remove': IDs of existing objects or pathways to delete.\n"
         "- 'relocate': IDs of existing objects to move to a new zone.\n"
+        "- Gate and Car Park/Garage are PERMANENT: do NOT include them in the 'add' array if they already exist, and do NOT remove or relocate them unless explicitly requested.\n"
         "- If the user asks to 'replace' something, remove the old one and add the new one.\n"
         "- If the user's request doesn't need a particular key, use an empty array [].\n"
+        "- Be conservative: only add/remove/relocate items explicitly requested or strictly necessary. Avoid changing unrelated parts of the layout.\n"
         "- Do NOT include the house.\n"
         "Return only the JSON object, nothing else."
     )
@@ -169,21 +178,45 @@ def modify_layout(
 
     if add_intent:
         # Build occupied rectangles from kept objects so placement avoids them
-        existing_rects = [
-            {"x": o.x, "y": o.y, "w": o.width, "d": o.depth}
-            for o in final_objects
-        ]
+        existing_rects = []
+        for o in final_objects:
+            # Check rotation for bounding box
+            is_swapped = abs(o.rotation) == 90 or abs(o.rotation) == 270
+            existing_rects.append({
+                "x": o.x, "y": o.y, 
+                "w": o.depth if is_swapped else o.width, 
+                "d": o.width if is_swapped else o.depth
+            })
 
-        new_objects, new_pathways, new_unplaced, _ = place_objects(
-            add_intent, catalog_map, input_data
+        # Add existing car park to obstacles
+        if current_layout.car_park:
+            cp = current_layout.car_park
+            is_swapped = abs(cp.rotation) == 90 or abs(cp.rotation) == 270
+            existing_rects.append({
+                "x": cp.x, "y": cp.y, 
+                "w": cp.depth if is_swapped else cp.width, 
+                "d": cp.width if is_swapped else cp.depth
+            })
+            
+        # Add existing gate to obstacles
+        if current_layout.gate:
+            g = current_layout.gate
+            existing_rects.append({
+                "x": g.x, "y": g.y, 
+                "w": catalog_map.get(g.variant, {}).get("width", 3.5), 
+                "d": 0.2
+            })
+
+        new_objects, new_pathways, new_unplaced, new_car_park, new_gate = place_objects(
+            add_intent, catalog_map, input_data, existing_rects=existing_rects
         )
 
-        # TODO: ideally pass existing_rects to place_objects to avoid collisions
-        # For now the placement engine uses the house + its own placed list
         final_objects.extend(new_objects)
         kept_pathways.extend(new_pathways)
     else:
         new_unplaced = []
+        new_car_park = None
+        new_gate = None
 
     # ── 6. Re-number object IDs to keep them sequential ────────────────────
     for i, obj in enumerate(final_objects):
@@ -196,6 +229,8 @@ def modify_layout(
     updated_layout = LayoutOutput(
         land=current_layout.land,
         house=current_layout.house,
+        car_park=new_car_park if new_car_park else current_layout.car_park,
+        gate=new_gate if new_gate else getattr(current_layout, 'gate', None),
         zones=zones,
         objects=final_objects,
         pathways=kept_pathways,
