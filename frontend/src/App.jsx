@@ -1,10 +1,11 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import LayoutForm from './components/sidebar/LayoutForm';
 import ObjectInspector from './components/sidebar/ObjectInspector';
 import TopViewSvg from './components/viewer2d/TopViewSvg';
 import ThreeDViewer from './components/viewer3d/index';
 import ScorePanel from './components/ScorePanel';
-import { generateLandscapeDesign } from './api/landscapeApi';
+import ChatPrompt from './components/ChatPrompt';
+import { generateLandscapeDesign, modifyLandscapeDesign } from './api/landscapeApi';
 import exampleLayout from './data/exampleLayout.json';
 
 export default function App() {
@@ -13,20 +14,54 @@ export default function App() {
   const [activeTab, setActiveTab] = useState('2d');
   const [error, setError] = useState(null);
   // Track whether 3D has ever been opened — so we lazy-mount once and keep alive
-  const [has3dMounted, setHas3dMounted] = useState(false);
+  const [has3dMounted, setHas3dMounted] = useState(false);  const [lastFormData, setLastFormData] = useState(null);
+  const [lastRequest, setLastRequest] = useState(null);
+  // Walk mode state
+  const [walkMode, setWalkMode] = useState(false);
+  const [showWalkHud, setShowWalkHud] = useState(false);
+  // True once the browser grants pointer lock on the canvas
+  const [isPointerLocked, setIsPointerLocked] = useState(false);
 
   const handleUseExample = () => {
     setLayout(exampleLayout);
     setActiveTab('2d');
     setError(null);
+    setWalkMode(false);
   };
+
+  // Track pointer lock changes globally
+  useEffect(() => {
+    const onChange = () => {
+      const locked = !!document.pointerLockElement;
+      setIsPointerLocked(locked);
+      // If the user pressed Esc to release the lock, exit walk mode too
+      if (!locked && walkMode) {
+        setWalkMode(false);
+        setActiveTab('3d');
+      }
+    };
+    document.addEventListener('pointerlockchange', onChange);
+    return () => document.removeEventListener('pointerlockchange', onChange);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [walkMode]);
+
+  // Show HUD for 4 s when entering walk mode (after lock is acquired)
+  useEffect(() => {
+    if (!isPointerLocked) { setShowWalkHud(false); return; }
+    setShowWalkHud(true);
+    const t = setTimeout(() => setShowWalkHud(false), 4000);
+    return () => clearTimeout(t);
+  }, [isPointerLocked]);
 
   const handleGenerate = async (formData) => {
     setIsLoading(true);
     setError(null);
+    setWalkMode(false);
+    setLastRequest(formData); // Store the request payload
     try {
       const result = await generateLandscapeDesign(formData);
       setLayout(result);
+      setLastFormData(formData);
       setActiveTab('2d');
     } catch (err) {
       setError(
@@ -34,6 +69,43 @@ export default function App() {
         err?.message ||
         'Failed to connect to the backend. Is the server running?'
       );
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleEnterWalk = () => {
+    if (!has3dMounted) setHas3dMounted(true);
+    setActiveTab('walk');
+    setWalkMode(true);
+  };
+
+  const handleExitWalk = () => {
+    // Release pointer lock first so cursor reappears immediately
+    if (document.pointerLockElement) {
+      document.exitPointerLock();
+    }
+    setWalkMode(false);
+    setIsPointerLocked(false);
+    setActiveTab('3d');
+  };
+
+  const handleModify = async (prompt) => {
+    if (!layout || !lastFormData) return;
+    setIsLoading(true);
+    setError(null);
+    const modifyPayload = { layout, prompt, lastFormData };
+    setLastRequest(modifyPayload); // Store modification request
+    try {
+      const result = await modifyLandscapeDesign(layout, prompt, lastFormData);
+      setLayout(result);
+    } catch (err) {
+      setError(
+        err?.response?.data?.detail ||
+        err?.message ||
+        'Failed to modify the design. Is the server running?'
+      );
+      throw err; // re-throw so ChatPrompt can show error status
     } finally {
       setIsLoading(false);
     }
@@ -70,7 +142,7 @@ export default function App() {
           <div className="view-tabs">
             <button
               className={`view-tab ${activeTab === '2d' ? 'active' : ''}`}
-              onClick={() => setActiveTab('2d')}
+              onClick={() => { setActiveTab('2d'); setWalkMode(false); }}
             >
               🗺️ 2D Plan
             </button>
@@ -78,12 +150,27 @@ export default function App() {
               className={`view-tab ${activeTab === '3d' ? 'active' : ''}`}
               onClick={() => {
                 setActiveTab('3d');
-                // Lazy-mount: only mount ThreeDViewer the first time
+                setWalkMode(false);
                 if (!has3dMounted) setHas3dMounted(true);
               }}
               disabled={!layout}
             >
               🧊 3D View
+            </button>
+            <button
+              className={`view-tab walk-tab ${activeTab === 'walk' ? 'active' : ''}`}
+              onClick={handleEnterWalk}
+              disabled={!layout}
+              title="First-person walk mode — WASD to move, drag to look"
+            >
+              🚶 Walk
+            </button>
+            <button
+              className={`view-tab ${activeTab === 'debug' ? 'active' : ''}`}
+              onClick={() => { setActiveTab('debug'); setWalkMode(false); }}
+              title="View last JSON request sent to API"
+            >
+              ⌨️ Request
             </button>
             {layout && (
               <span style={{ marginLeft: 'auto', fontSize: '0.72rem', color: 'var(--text-muted)' }}>
@@ -109,6 +196,21 @@ export default function App() {
               </div>
             )}
 
+            {/* Request Payload View */}
+            {activeTab === 'debug' && (
+              <div className="debug-viewer">
+                <div className="debug-header">
+                  <h3>JSON Request Payload</h3>
+                  <button className="btn-copy" onClick={() => navigator.clipboard.writeText(JSON.stringify(lastRequest, null, 2))}>
+                    📋 Copy JSON
+                  </button>
+                </div>
+                <pre className="debug-code">
+                  {lastRequest ? JSON.stringify(lastRequest, null, 2) : '// No request sent yet'}
+                </pre>
+              </div>
+            )}
+
             {/* 2D viewer — always shown when layout is ready and 2D is active */}
             {layout && !isLoading && activeTab === '2d' && (
               <TopViewSvg layout={layout} />
@@ -123,10 +225,57 @@ export default function App() {
               <div style={{
                 position: 'absolute',
                 inset: 0,
-                visibility: activeTab === '3d' ? 'visible' : 'hidden',
-                pointerEvents: activeTab === '3d' ? 'auto' : 'none',
+                visibility: (activeTab === '3d' || activeTab === 'walk') ? 'visible' : 'hidden',
+                pointerEvents: (activeTab === '3d' || activeTab === 'walk') ? 'auto' : 'none',
               }}>
-                <ThreeDViewer layout={layout} />
+                <ThreeDViewer layout={layout} walkMode={walkMode} />
+
+                {/* ── Walk Mode HUD ── */}
+                {walkMode && (
+                  <>
+                    {/* "Click to capture" overlay — shown until pointer lock is active.
+                        The overlay sits ABOVE the canvas so we must call requestPointerLock
+                        from here directly — clicking the overlay never reaches the canvas. */}
+                    {!isPointerLocked && (
+                      <div
+                        className="walk-capture-overlay"
+                        onClick={() => {
+                          const canvas = document.querySelector('canvas');
+                          if (canvas) canvas.requestPointerLock();
+                        }}
+                      >
+                        <div className="walk-capture-inner">
+                          <div className="walk-capture-icon">🖱️</div>
+                          <div className="walk-capture-title">Click to enter walk mode</div>
+                          <div className="walk-capture-sub">Move mouse to look · WASD to walk · Esc to exit</div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Key-hint HUD — fades in after lock acquired, disappears after 4 s */}
+                    <div className={`walk-hud ${showWalkHud ? 'walk-hud-visible' : ''}`}>
+                      <div className="walk-hud-inner">
+                        <div className="walk-hud-title">🚶 Walk Mode</div>
+                        <div className="walk-hud-keys">
+                          <span className="walk-key">W A S D</span> Move
+                          &nbsp;·&nbsp;
+                          <span className="walk-key">Mouse</span> Look
+                          &nbsp;·&nbsp;
+                          <span className="walk-key">Shift</span> Sprint
+                          &nbsp;·&nbsp;
+                          <span className="walk-key">Esc</span> Exit
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Exit Walk button — only visible when locked (not obscured by capture overlay) */}
+                    {isPointerLocked && (
+                      <button className="exit-walk-btn" onClick={handleExitWalk}>
+                        ✕ Exit Walk
+                      </button>
+                    )}
+                  </>
+                )}
               </div>
             )}
           </div>
@@ -151,6 +300,9 @@ export default function App() {
               ))}
             </div>
           )}
+
+          {/* Chat Prompt */}
+          <ChatPrompt onModify={handleModify} isLoading={isLoading} hasLayout={!!layout} />
 
           {/* Scores */}
           <ScorePanel scores={layout?.scores} />

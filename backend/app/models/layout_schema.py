@@ -7,12 +7,23 @@ class LandOutput(BaseModel):
     unit: str
     road_direction: str = "south"
     ground_texture: str = "grass"
+    wall_texture: str = "brick"
 
 class HouseOutput(BaseModel):
     x: float
     y: float
     width: float
     depth: float
+    rotation: float = 0.0
+
+class CarParkOutput(BaseModel):
+    x: float
+    y: float
+    width: float
+    depth: float
+    type: str = "open"
+    rotation: float = 0.0
+
 
 class ZoneOutput(BaseModel):
     id: str
@@ -30,17 +41,16 @@ class ObjectOutput(BaseModel):
     y: float
     width: float
     depth: float
-    height: float = 0.5                         # real-world height in meters
+    height: float = 0.5
     rotation: float = 0.0
     zoneId: Optional[str] = None
-    render_type: str = "model"                  # "model" | "flat" | "path"
-    material: Optional[str] = None              # "grass" | "stone" | "concrete" | etc.
+    render_type: str = "model"
+    material: Optional[str] = None
 
 class PathwayOutput(BaseModel):
-    """A routed path defined by waypoints rather than a bounding box."""
     id: str
     variant: str
-    points: List[Tuple[float, float]]           # [(x, z), ...] in world-space meters
+    points: List[Tuple[float, float]]
     width: float = 1.2
     material: str = "stone"
 
@@ -57,6 +67,7 @@ class ScoresOutput(BaseModel):
 class LayoutOutput(BaseModel):
     land: LandOutput
     house: HouseOutput
+    car_park: Optional[CarParkOutput] = None
     zones: List[ZoneOutput] = Field(default_factory=list)
     objects: List[ObjectOutput] = Field(default_factory=list)
     pathways: List[PathwayOutput] = Field(default_factory=list)

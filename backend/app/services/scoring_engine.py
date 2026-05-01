@@ -6,14 +6,15 @@ VASTU_PREFERRED = {
     "trees":       ["north", "north_east", "east"],
     "pond":        ["north", "north_east"],
     "fountain":    ["north", "north_east"],
+    "well":        ["north", "north_east"],
     "bench":       ["east", "north_east"],
     "garden_lights":["south_east"],
     "seating_area":["east", "north"],
     "flower_beds": ["east", "west", "north"],
 }
 
-COOL_TYPES = {"trees", "pond", "fountain", "lawn"}
-GREEN_TYPES = {"trees", "lawn", "flower_beds", "vegetable_beds", "pond", "fountain"}
+COOL_TYPES = {"trees", "pond", "fountain", "bush", "well"}
+GREEN_TYPES = {"trees", "bush", "flower_beds", "vegetable_beds", "pond", "fountain", "well"}
 
 
 def calculate_scores(layout, input_data: LandscapeDesignInput) -> ScoresOutput:
@@ -21,7 +22,11 @@ def calculate_scores(layout, input_data: LandscapeDesignInput) -> ScoresOutput:
     house_area = input_data.house.width * input_data.house.depth
 
     used_area = house_area
+    if input_data.car_park:
+        used_area += input_data.car_park.width * input_data.car_park.depth
+    
     green_area = 0.0
+
     cool_area = 0.0
     vastu_hits = 0
     vastu_total = 0

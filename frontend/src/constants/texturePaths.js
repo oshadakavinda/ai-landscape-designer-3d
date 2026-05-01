@@ -29,10 +29,18 @@
  *   // if undefined, fall back to GROUND_BASE_COLORS[land.ground_texture]
  */
 export const GROUND_TEXTURES = {
-  grass: '/textures/ground/brown_mud_leaves_01_diff_4k.jpg',
+  grass: '/textures/ground/grass_1k.png',
   stone_paving: '/textures/ground/stone_tiles.jpg',
-  // bare_earth:   '/textures/ground/bare_earth_1k.jpg',
+  bare_earth: '/textures/ground/brown_mud_leaves_01_diff_4k.jpg',
   // mixed:        '/textures/ground/mixed_1k.jpg',
+};
+
+/**
+ * Wall texture paths.
+ */
+export const WALL_TEXTURES = {
+  brick: '/textures/brick_wall.png',
+  concrete: '/textures/concrete_texture.jpg',
 };
 
 /**
@@ -61,12 +69,12 @@ export const SURFACE_TEXTURES = {
  * Larger land = more repeats to keep the texture looking right.
  * Formula used: repeat = landDimension / TILE_SIZE
  */
-export const GROUND_TILE_SIZE = 2; // meters per tile repeat
+export const GROUND_TILE_SIZE = 4; // meters per tile repeat
 
 /**
  * Tiling repeat scale for surface material textures.
  */
-export const SURFACE_TILE_SIZE = 2; // meters per tile repeat
+export const SURFACE_TILE_SIZE = 4; // meters per tile repeat
 
 /**
  * Road textures.

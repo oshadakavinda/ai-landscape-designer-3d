@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import * as THREE from 'three';
+import { useTexture } from '@react-three/drei';
 import { LIFT, GROUND_HEIGHT } from '../../../constants/renderConfig';
 
 /**
@@ -8,7 +9,7 @@ import { LIFT, GROUND_HEIGHT } from '../../../constants/renderConfig';
  * without stretching architectural features like windows and doors.
  */
 export default function House({ house }) {
-  const { width, depth, x, y } = house;
+  const { width, depth, x, y, rotation = 0 } = house;
   
   // Center position
   const cx = x + width / 2;
@@ -37,18 +38,43 @@ export default function House({ house }) {
     bevelSegments: 1
   }), [depth]);
 
+  const wallTexture = useTexture('/textures/wall_texture.jpg');
+  const roofTexture = useTexture('/textures/roof_texture.jpg');
+
+  const wallMap = useMemo(() => {
+    const t = wallTexture.clone();
+    t.wrapS = THREE.RepeatWrapping;
+    t.wrapT = THREE.RepeatWrapping;
+    t.repeat.set(width / 4, houseHeight / 4);
+    t.needsUpdate = true;
+    return t;
+  }, [wallTexture, width, houseHeight]);
+
+  const roofMap = useMemo(() => {
+    const t = roofTexture.clone();
+    t.wrapS = THREE.RepeatWrapping;
+    t.wrapT = THREE.RepeatWrapping;
+    t.repeat.set(depth / 4, 1);
+    t.needsUpdate = true;
+    return t;
+  }, [roofTexture, depth]);
+
   return (
-    <group position={[cx, GROUND_HEIGHT + LIFT, cz]}>
+    <group 
+      position={[cx, GROUND_HEIGHT + LIFT, cz]}
+      rotation={[0, THREE.MathUtils.degToRad(rotation), 0]}
+    >
+
       {/* Main Building Body */}
       <mesh position={[0, houseHeight / 2, 0]} castShadow receiveShadow>
         <boxGeometry args={[width, houseHeight, depth]} />
-        <meshStandardMaterial color="#f8fafc" roughness={0.8} />
+        <meshStandardMaterial map={wallMap} color="#f8fafc" roughness={0.9} />
       </mesh>
 
       {/* Pitched Roof */}
       <mesh position={[0, houseHeight, -depth / 2]} castShadow receiveShadow>
         <extrudeGeometry args={[roofShape, extrudeSettings]} />
-        <meshStandardMaterial color="#334155" roughness={0.4} />
+        <meshStandardMaterial map={roofMap} color="#e2e8f0" roughness={0.7} />
       </mesh>
 
       {/* Decorative Door (always centered on the front face) */}

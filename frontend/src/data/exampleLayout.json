@@ -1,181 +1,163 @@
 {
   "land": {
-    "width": 30,
-    "depth": 40,
+    "width": 20.0,
+    "depth": 30.0,
     "unit": "m",
-    "road_direction": "north",
+    "road_direction": "south",
     "ground_texture": "grass"
   },
   "house": {
-    "x": 10,
-    "y": 10,
-    "width": 10,
-    "depth": 12
+    "x": 5.0,
+    "y": 8.0,
+    "width": 10.0,
+    "depth": 9.0
   },
-  "zones": [],
+  "zones": [
+    {
+      "id": "north",
+      "type": "north",
+      "x": 0.0,
+      "y": 15.0,
+      "width": 20.0,
+      "depth": 15.0
+    },
+    {
+      "id": "south",
+      "type": "south",
+      "x": 0.0,
+      "y": 0.0,
+      "width": 20.0,
+      "depth": 15.0
+    },
+    {
+      "id": "east",
+      "type": "east",
+      "x": 10.0,
+      "y": 0.0,
+      "width": 10.0,
+      "depth": 30.0
+    },
+    {
+      "id": "west",
+      "type": "west",
+      "x": 0.0,
+      "y": 0.0,
+      "width": 10.0,
+      "depth": 30.0
+    },
+    {
+      "id": "center",
+      "type": "center",
+      "x": 4.0,
+      "y": 6.0,
+      "width": 12.0,
+      "depth": 18.0
+    }
+  ],
   "objects": [
     {
-      "id": "garage_01",
-      "type": "covered_car_park",
-      "variant": "car_park_covered_01",
+      "id": "obj_003",
+      "type": "lawn",
+      "variant": "lawn_patch_01",
       "x": 10.0,
-      "y": 0.5,
-      "rotation": 0,
-      "numVehicles": 4,
-      "zoneId": ""
+      "y": 17.5,
+      "width": 5.0,
+      "depth": 5.0,
+      "height": 0.02,
+      "rotation": 0.0,
+      "zoneId": "north_east",
+      "render_type": "flat",
+      "material": "grass"
     },
     {
-      "id": "pond_main",
-      "type": "pond",
-      "variant": "pond_small_01",
-      "x": 24.0,
-      "y": 32.0,
-      "rotation": 0,
-      "zoneId": "NE"
-    },
-    {
-      "id": "fountain_pond",
-      "type": "fountain",
-      "variant": "fountain_round_01",
-      "x": 25.75,
-      "y": 34.5,
-      "rotation": 0,
-      "zoneId": "NE"
-    },
-    {
-      "id": "bench_01",
+      "id": "obj_004",
       "type": "bench",
       "variant": "bench_wood_01",
-      "x": 18.0,
-      "y": 28.0,
-      "rotation": 0,
-      "zoneId": ""
-    },
-    {
-      "id": "flower_bed_01",
-      "type": "flower_beds",
-      "variant": "flower_bed_rect_01",
-      "x": 12.0,
+      "x": 10.0,
       "y": 23.0,
-      "rotation": 0,
-      "zoneId": ""
+      "width": 2.0,
+      "depth": 1.0,
+      "height": 0.6,
+      "rotation": 0.0,
+      "zoneId": "north_east",
+      "render_type": "model",
+      "material": null
     },
     {
-      "id": "flower_bed_02",
-      "type": "flower_beds",
-      "variant": "flower_bed_rect_02",
-      "x": 17.0,
-      "y": 23.0,
-      "rotation": 0,
-      "zoneId": ""
-    },
-    {
-      "id": "flower_bed_03",
-      "type": "flower_beds",
-      "variant": "flower_bed_round_01",
-      "x": 24.0,
-      "y": 30.0,
-      "rotation": 0,
-      "zoneId": ""
-    },
-    {
-      "id": "tree_01",
+      "id": "obj_005",
       "type": "trees",
       "variant": "tree_palm_01",
-      "x": 9.0,
-      "y": 38.0,
-      "rotation": 0,
-      "zoneId": "N"
+      "x": 10.0,
+      "y": 0.0,
+      "width": 4.0,
+      "depth": 4.0,
+      "height": 5.0,
+      "rotation": 0.0,
+      "zoneId": "south_east",
+      "render_type": "model",
+      "material": null
     },
     {
-      "id": "tree_02",
+      "id": "obj_006",
       "type": "trees",
       "variant": "tree_palm_01",
-      "x": 11.5,
-      "y": 38.0,
-      "rotation": 0,
-      "zoneId": "N"
+      "x": 0.0,
+      "y": 15.0,
+      "width": 4.0,
+      "depth": 4.0,
+      "height": 5.0,
+      "rotation": 0.0,
+      "zoneId": "north_west",
+      "render_type": "model",
+      "material": null
     },
     {
-      "id": "tree_03",
+      "id": "obj_007",
       "type": "trees",
       "variant": "tree_palm_01",
-      "x": 20.0,
-      "y": 34.0,
-      "rotation": 0,
-      "zoneId": "N"
-    },
-    {
-      "id": "tree_04",
-      "type": "trees",
-      "variant": "tree_palm_01",
-      "x": 29.0,
-      "y": 30.0,
-      "rotation": 0,
-      "zoneId": "E"
-    },
-    {
-      "id": "tree_05",
-      "type": "trees",
-      "variant": "tree_palm_01",
-      "x": 29.0,
-      "y": 20.0,
-      "rotation": 0,
-      "zoneId": "E"
-    },
-    {
-      "id": "tree_06",
-      "type": "trees",
-      "variant": "tree_palm_01",
-      "x": 29.0,
-      "y": 5.0,
-      "rotation": 0,
-      "zoneId": "E"
-    },
-    {
-      "id": "tree_07",
-      "type": "trees",
-      "variant": "tree_palm_01",
-      "x": 29.0,
-      "y": 25.0,
-      "rotation": 0,
-      "zoneId": "E"
+      "x": 0.0,
+      "y": 19.5,
+      "width": 4.0,
+      "depth": 4.0,
+      "height": 5.0,
+      "rotation": 0.0,
+      "zoneId": "north",
+      "render_type": "model",
+      "material": null
     }
   ],
   "pathways": [
     {
-      "id": "main_path",
+      "id": "path_001",
       "variant": "path_stone_01",
       "points": [
         [
-          15.0,
-          40.0
+          10.0,
+          0.0
         ],
         [
-          15.0,
-          30.0
-        ],
-        [
-          15.0,
-          24.0
-        ],
-        [
-          15.0,
-          22.0
+          10.0,
+          8.0
         ]
       ],
-      "width": 1.2
+      "width": 1.2,
+      "material": "stone"
     }
   ],
-  "unplaced": [],
+  "unplaced": [
+    {
+      "type": "car_park",
+      "reason": "Variant 'car_park_01' not in catalog."
+    }
+  ],
   "scores": {
-    "vastuScore": 85,
-    "sustainabilityScore": 90,
-    "coolingScore": 80,
-    "spaceUtilizationScore": 95
+    "vastuScore": 65,
+    "sustainabilityScore": 24,
+    "coolingScore": 20,
+    "spaceUtilizationScore": 28
   },
   "recommendations": [
-    "Luxury style design with Vastu-compliant pond in North-East.",
-    "Efficient pathway routing with 7 trees providing ample shade."
+    "Vastu priority 5/10 applied.",
+    "5 features placed, 1 pathways routed, 1 could not fit."
   ]
 }

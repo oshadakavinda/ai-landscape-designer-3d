@@ -13,6 +13,14 @@ Pathways are a special case: they are routed as point arrays, not boxes.
 from app.models.input_schema import LandscapeDesignInput
 from app.models.layout_schema import ObjectOutput, PathwayOutput, UnplacedOutput
 
+class DotDict(dict):
+    """Allows dot notation access for dictionary keys."""
+    def __getattr__(self, name):
+        return self.get(name)
+    def __setattr__(self, name, value):
+        self[name] = value
+
+
 SPACING = 0.5  # minimum gap between any two objects
 
 
@@ -48,8 +56,10 @@ def _try_place(
     land_w: float,
     land_d: float,
     house,
+    car_park,
     placed: list,
     step: float = 0.5,
+
 ) -> tuple[float, float] | None:
     """Scan the zone in a grid pattern and return the first valid (x, y), or None."""
     x_min, y_min, x_max, y_max = _zone_bounds(zone, land_w, land_d)
@@ -59,12 +69,20 @@ def _try_place(
         y = y_min
         while y + obj_d <= y_max and y + obj_d <= land_d:
             if not _overlaps(x, y, obj_w, obj_d, house.x, house.y, house.width, house.depth):
-                ok = all(
-                    not _overlaps(x, y, obj_w, obj_d, p["x"], p["y"], p["w"], p["d"])
-                    for p in placed
-                )
-                if ok:
-                    return x, y
+                # Also check car_park if it exists
+                cp_ok = True
+                if car_park:
+                    if _overlaps(x, y, obj_w, obj_d, car_park.x, car_park.y, car_park.width, car_park.depth):
+                        cp_ok = False
+                
+                if cp_ok:
+                    ok = all(
+                        not _overlaps(x, y, obj_w, obj_d, p["x"], p["y"], p["w"], p["d"])
+                        for p in placed
+                    )
+                    if ok:
+                        return x, y
+
             y += step
         x += step
     return None
@@ -111,7 +129,39 @@ def _route_pathway(
     )
 
 
+
+def _place_car_park(car_park_input, land_w, land_d, house, road_direction) -> tuple[float, float] | None:
+    """Find a valid spot for the car park near the road side."""
+    if not car_park_input:
+        return None
+
+    # Preferred zones based on road
+    zones = {
+        "south": ["south_east", "south_west", "south"],
+        "north": ["north_east", "north_west", "north"],
+        "east":  ["south_east", "north_east", "east"],
+        "west":  ["south_west", "north_west", "west"],
+    }.get(road_direction, ["south"])
+
+    # If facing East or West, the physical footprint swaps width and depth
+    w = car_park_input.depth if road_direction in ["east", "west"] else car_park_input.width
+    d = car_park_input.width if road_direction in ["east", "west"] else car_park_input.depth
+
+    for zone in zones:
+        pos = _try_place(
+            w, d, 
+            zone, land_w, land_d, house, None, [], step=0.5
+        )
+
+        if pos:
+            # Return original unswapped coords, placement engine expects original width/depth
+            return pos
+    return None
+
+
+
 def place_objects(
+
     intent: list[dict],
     catalog_map: dict,
     input_data: LandscapeDesignInput,
@@ -130,7 +180,30 @@ def place_objects(
     pathways: list[PathwayOutput] = []
     unplaced: list[UnplacedOutput] = []
 
+    # ── Place Car Park First ───────────────────────────────────────────
+    car_park_pos = _place_car_park(input_data.car_park, land_w, land_d, house, road)
+    car_park_rect = None
+    if car_park_pos:
+        cx, cy = car_park_pos
+        
+        rot = 0
+        if road == "north": rot = 0
+        elif road == "south": rot = 180
+        elif road == "east": rot = -90
+        elif road == "west": rot = 90
+        
+        car_park_rect = DotDict({
+            "x": cx, "y": cy, 
+            "width": input_data.car_park.width, 
+            "depth": input_data.car_park.depth,
+            "type": input_data.car_park.type,
+            "rotation": rot
+        })
+
+
+    
     FALLBACK_ORDER = ["north", "south", "east", "west",
+
                       "north_east", "north_west", "south_east", "south_west", "center"]
 
     path_count = 0
@@ -178,9 +251,12 @@ def place_objects(
 
         pos = None
         for zone in zones_to_try:
-            pos = _try_place(obj_w, obj_d, zone, land_w, land_d, house, placed_rects)
+            # Note: car_park_rect is passed as the car_park obstacle
+            pos = _try_place(obj_w, obj_d, zone, land_w, land_d, house, car_park_rect, placed_rects)
             if pos:
                 break
+
+
 
         if pos is None:
             unplaced.append(UnplacedOutput(type=obj_type, reason="No valid space found on the land."))
@@ -203,4 +279,5 @@ def place_objects(
             material=material,
         ))
 
-    return placed, pathways, unplaced
+    return placed, pathways, unplaced, car_park_rect
+
