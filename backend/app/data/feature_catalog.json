@@ -3,14 +3,14 @@
     {
       "type": "bench",
       "variants": [
-        {"id": "bench_wood_01", "width": 2.0, "depth": 1.0, "height": 0.6, "render_type": "model", "material": null},
-        {"id": "bench_stone_01", "width": 2.0, "depth": 0.7, "height": 0.6, "render_type": "model", "material": null}
+        {"id": "bench_wood_01", "width": 3.0, "depth": 1.2, "height": 1.0, "render_type": "model", "material": null},
+        {"id": "bench_stone_01", "width": 3.5, "depth": 1.4, "height": 1.2, "render_type": "model", "material": null}
       ]
     },
     {
       "type": "pond",
       "variants": [
-        {"id": "pond_small_01", "width": 2.5, "depth": 2.5, "height": 0.1, "render_type": "flat", "material": "water"}
+        {"id": "pond_small_01", "width": 2.5, "depth": 2.5, "height": 0.1, "render_type": "model", "material": "water"}
       ]
     },
     {
@@ -28,9 +28,9 @@
     {
       "type": "flower_beds",
       "variants": [
-        {"id": "flower_bed_rect_01", "width": 3.0, "depth": 1.0, "height": 0.15, "render_type": "flat", "material": "flowers"},
-        {"id": "flower_bed_rect_02", "width": 1.0, "depth": 2.0, "height": 0.1, "render_type": "flat", "material": "flowers"},
-        {"id": "flower_bed_round_01", "width": 0.5, "depth": 0.5, "height": 0.1, "render_type": "flat", "material": "flowers"}
+        {"id": "flower_bed_rect_01", "width": 3.0, "depth": 1.0, "height": 0.15, "render_type": "model", "material": "flowers"},
+        {"id": "flower_bed_rect_02", "width": 1.0, "depth": 2.0, "height": 0.1, "render_type": "model", "material": "flowers"},
+        {"id": "flower_bed_round_01", "width": 0.5, "depth": 0.5, "height": 0.1, "render_type": "model", "material": "flowers"}
       ]
     },
     {

@@ -17,6 +17,7 @@ import WalkControls from './controls/WalkControls';
 
 import Ground from './scene/Ground';
 import LandBoundary from './scene/LandBoundary';
+import BoundaryWall from './scene/BoundaryWall';
 import Road from './scene/Road';
 import House from './scene/House';
 import Garage from './scene/Garage';
@@ -78,6 +79,7 @@ export default function ThreeDViewer({ layout, walkMode = false }) {
 
       <Suspense fallback={null}>
         <LandBoundary land={land} />
+        <BoundaryWall land={land} />
         <Road land={land} direction={land.road_direction} />
 
         <Grid
