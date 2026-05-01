@@ -10,6 +10,7 @@ const DEFAULT_FORM = {
   garden_style: 'family',
   vehicle_count: 1,
   ground_texture: 'grass',
+  wall_texture: 'brick',
   optional_features: { bench: 1, trees: 3, bush: 1, pathway: 1 },
 };
 
@@ -154,6 +155,15 @@ export default function LayoutForm({ onGenerate, isLoading }) {
               { value: 'stone_paving', label: '🪨 Stone Paving' },
               { value: 'bare_earth',   label: '🟤 Bare Earth' },
               { value: 'mixed',        label: '🎨 Mixed' },
+            ].map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+          </select>
+        </div>
+        <div className="form-group">
+          <label>Wall Texture</label>
+          <select value={form.wall_texture} onChange={e => setTop('wall_texture', e.target.value)}>
+            {[
+              { value: 'brick',    label: '🧱 Brick' },
+              { value: 'concrete', label: '🏢 Concrete' },
             ].map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
           </select>
         </div>

@@ -1,7 +1,9 @@
 import { useMemo, Suspense } from 'react';
 import * as THREE from 'three';
 import { useTexture, useGLTF, Clone } from '@react-three/drei';
+
 import { GROUND_HEIGHT } from '../../../constants/renderConfig';
+import { WALL_TEXTURES } from '../../../constants/texturePaths';
 
 /**
  * BoundaryWall
@@ -20,26 +22,26 @@ const CAP_OVERHANG = 0.04;
 const GATE_MODEL_URL = '/models/gate/gate.glb';
 
 // ─── Shared brick texture hook ───────────────────────────────────────────────
-function useBrickTexture(repeatX, repeatY) {
-  const texture = useTexture('/textures/brick_wall.png');
+function useWallTexture(textureUrl, repeatX, repeatY) {
+  const texture = useTexture(textureUrl);
 
   return useMemo(() => {
     const t = texture.clone();
     t.wrapS = THREE.RepeatWrapping;
     t.wrapT = THREE.RepeatWrapping;
-    t.repeat.set(repeatX, repeatY);
+    t.repeat.set(repeatX / 2, repeatY / 2); // Halved repeat to make bricks 2x bigger
     t.needsUpdate = true;
     return t;
   }, [texture, repeatX, repeatY]);
 }
 
 // ─── Sub-components ──────────────────────────────────────────────────────────
-function WallSegment({ position, args, repeatX, repeatY }) {
-  const brickMap = useBrickTexture(repeatX, repeatY);
+function WallSegment({ position, args, repeatX, repeatY, textureUrl }) {
+  const wallMap = useWallTexture(textureUrl, repeatX, repeatY);
   return (
     <mesh position={position} castShadow receiveShadow>
       <boxGeometry args={args} />
-      <meshStandardMaterial map={brickMap} color="#c4a882" roughness={0.92} metalness={0.02} />
+      <meshStandardMaterial map={wallMap} color="#c4a882" roughness={0.92} metalness={0.02} />
     </mesh>
   );
 }
@@ -53,8 +55,8 @@ function WallCap({ position, args }) {
   );
 }
 
-function Pillar({ position }) {
-  const pillarMap = useBrickTexture(0.5, WALL_HEIGHT / 1.5);
+function Pillar({ position, textureUrl }) {
+  const pillarMap = useWallTexture(textureUrl, 0.5, WALL_HEIGHT / 1.5);
   const y = GROUND_HEIGHT + WALL_HEIGHT / 2;
   const capY = GROUND_HEIGHT + WALL_HEIGHT + 0.04;
   return (
@@ -119,7 +121,7 @@ function GateModel({ position, rotation, gateWidth }) {
 }
 
 // ─── Solid wall (no gate) ────────────────────────────────────────────────────
-function SolidWall({ wallCenter, wallLength, wallY, capY, isHorizontal, hRepeat, vRepeat }) {
+function SolidWall({ wallCenter, wallLength, wallY, capY, isHorizontal, hRepeat, vRepeat, textureUrl }) {
   const args = isHorizontal
     ? [wallLength + WALL_THICKNESS, WALL_HEIGHT, WALL_THICKNESS]
     : [WALL_THICKNESS, WALL_HEIGHT, wallLength];
@@ -129,14 +131,14 @@ function SolidWall({ wallCenter, wallLength, wallY, capY, isHorizontal, hRepeat,
 
   return (
     <>
-      <WallSegment position={wallCenter} args={args} repeatX={hRepeat} repeatY={vRepeat} />
+      <WallSegment position={wallCenter} args={args} repeatX={hRepeat} repeatY={vRepeat} textureUrl={textureUrl} />
       <WallCap position={[wallCenter[0], capY, wallCenter[2]]} args={capArgs} />
     </>
   );
 }
 
 // ─── Split wall with gate opening ────────────────────────────────────────────
-function SplitWall({ wallLength, fixedCoord, wallY, capY, isHorizontal, gateWidth, hRepeatFn, vRepeat }) {
+function SplitWall({ wallLength, fixedCoord, wallY, capY, isHorizontal, gateWidth, hRepeatFn, vRepeat, textureUrl }) {
   const halfGate = gateWidth / 2;
   const mid = wallLength / 2;
 
@@ -158,7 +160,7 @@ function SplitWall({ wallLength, fixedCoord, wallY, capY, isHorizontal, gateWidt
             <WallSegment
               position={[leftCenter, wallY, fixedCoord]}
               args={[leftLen, WALL_HEIGHT, WALL_THICKNESS]}
-              repeatX={hRepeatFn(leftLen)} repeatY={vRepeat}
+              repeatX={hRepeatFn(leftLen)} repeatY={vRepeat} textureUrl={textureUrl}
             />
             <WallCap
               position={[leftCenter, capY, fixedCoord]}
@@ -173,7 +175,7 @@ function SplitWall({ wallLength, fixedCoord, wallY, capY, isHorizontal, gateWidt
             <WallSegment
               position={[rightCenter, wallY, fixedCoord]}
               args={[rightLen, WALL_HEIGHT, WALL_THICKNESS]}
-              repeatX={hRepeatFn(rightLen)} repeatY={vRepeat}
+              repeatX={hRepeatFn(rightLen)} repeatY={vRepeat} textureUrl={textureUrl}
             />
             <WallCap
               position={[rightCenter, capY, fixedCoord]}
@@ -183,8 +185,8 @@ function SplitWall({ wallLength, fixedCoord, wallY, capY, isHorizontal, gateWidt
         )}
 
         {/* Gate pillars on either side of the opening */}
-        <Pillar position={[mid - halfGate, fixedCoord]} />
-        <Pillar position={[mid + halfGate, fixedCoord]} />
+        <Pillar position={[mid - halfGate, fixedCoord]} textureUrl={textureUrl} />
+        <Pillar position={[mid + halfGate, fixedCoord]} textureUrl={textureUrl} />
       </>
     );
   } else {
@@ -196,7 +198,7 @@ function SplitWall({ wallLength, fixedCoord, wallY, capY, isHorizontal, gateWidt
             <WallSegment
               position={[fixedCoord, wallY, leftCenter]}
               args={[WALL_THICKNESS, WALL_HEIGHT, leftLen]}
-              repeatX={hRepeatFn(leftLen)} repeatY={vRepeat}
+              repeatX={hRepeatFn(leftLen)} repeatY={vRepeat} textureUrl={textureUrl}
             />
             <WallCap
               position={[fixedCoord, capY, leftCenter]}
@@ -210,7 +212,7 @@ function SplitWall({ wallLength, fixedCoord, wallY, capY, isHorizontal, gateWidt
             <WallSegment
               position={[fixedCoord, wallY, rightCenter]}
               args={[WALL_THICKNESS, WALL_HEIGHT, rightLen]}
-              repeatX={hRepeatFn(rightLen)} repeatY={vRepeat}
+              repeatX={hRepeatFn(rightLen)} repeatY={vRepeat} textureUrl={textureUrl}
             />
             <WallCap
               position={[fixedCoord, capY, rightCenter]}
@@ -219,8 +221,8 @@ function SplitWall({ wallLength, fixedCoord, wallY, capY, isHorizontal, gateWidt
           </>
         )}
 
-        <Pillar position={[fixedCoord, mid - halfGate]} />
-        <Pillar position={[fixedCoord, mid + halfGate]} />
+        <Pillar position={[fixedCoord, mid - halfGate]} textureUrl={textureUrl} />
+        <Pillar position={[fixedCoord, mid + halfGate]} textureUrl={textureUrl} />
       </>
     );
   }
@@ -233,6 +235,8 @@ export default function BoundaryWall({ land, gateWidth = 3 }) {
   const road = land.road_direction || 'south';
   const wallY = GROUND_HEIGHT + WALL_HEIGHT / 2;
   const capY = GROUND_HEIGHT + WALL_HEIGHT + CAP_OVERHANG / 2;
+  const wallTextureKey = land.wall_texture || 'brick';
+  const textureUrl = WALL_TEXTURES[wallTextureKey] || WALL_TEXTURES.brick;
 
   const hRepeat = (len) => Math.max(1, Math.round(len / 1.5));
   const vRepeat = Math.max(1, Math.round(WALL_HEIGHT / 0.8));
@@ -262,12 +266,12 @@ export default function BoundaryWall({ land, gateWidth = 3 }) {
       {isRoadWall('north') ? (
         <SplitWall
           wallLength={w} fixedCoord={d} wallY={wallY} capY={capY}
-          isHorizontal gateWidth={gateWidth} hRepeatFn={hRepeat} vRepeat={vRepeat}
+          isHorizontal gateWidth={gateWidth} hRepeatFn={hRepeat} vRepeat={vRepeat} textureUrl={textureUrl}
         />
       ) : (
         <SolidWall
           wallCenter={[w / 2, wallY, d]} wallLength={w} wallY={wallY} capY={capY}
-          isHorizontal hRepeat={hRepeat(w)} vRepeat={vRepeat}
+          isHorizontal hRepeat={hRepeat(w)} vRepeat={vRepeat} textureUrl={textureUrl}
         />
       )}
 
@@ -275,12 +279,12 @@ export default function BoundaryWall({ land, gateWidth = 3 }) {
       {isRoadWall('south') ? (
         <SplitWall
           wallLength={w} fixedCoord={0} wallY={wallY} capY={capY}
-          isHorizontal gateWidth={gateWidth} hRepeatFn={hRepeat} vRepeat={vRepeat}
+          isHorizontal gateWidth={gateWidth} hRepeatFn={hRepeat} vRepeat={vRepeat} textureUrl={textureUrl}
         />
       ) : (
         <SolidWall
           wallCenter={[w / 2, wallY, 0]} wallLength={w} wallY={wallY} capY={capY}
-          isHorizontal hRepeat={hRepeat(w)} vRepeat={vRepeat}
+          isHorizontal hRepeat={hRepeat(w)} vRepeat={vRepeat} textureUrl={textureUrl}
         />
       )}
 
@@ -288,12 +292,12 @@ export default function BoundaryWall({ land, gateWidth = 3 }) {
       {isRoadWall('west') ? (
         <SplitWall
           wallLength={d} fixedCoord={0} wallY={wallY} capY={capY}
-          isHorizontal={false} gateWidth={gateWidth} hRepeatFn={hRepeat} vRepeat={vRepeat}
+          isHorizontal={false} gateWidth={gateWidth} hRepeatFn={hRepeat} vRepeat={vRepeat} textureUrl={textureUrl}
         />
       ) : (
         <SolidWall
           wallCenter={[0, wallY, d / 2]} wallLength={d} wallY={wallY} capY={capY}
-          isHorizontal={false} hRepeat={hRepeat(d)} vRepeat={vRepeat}
+          isHorizontal={false} hRepeat={hRepeat(d)} vRepeat={vRepeat} textureUrl={textureUrl}
         />
       )}
 
@@ -301,20 +305,20 @@ export default function BoundaryWall({ land, gateWidth = 3 }) {
       {isRoadWall('east') ? (
         <SplitWall
           wallLength={d} fixedCoord={w} wallY={wallY} capY={capY}
-          isHorizontal={false} gateWidth={gateWidth} hRepeatFn={hRepeat} vRepeat={vRepeat}
+          isHorizontal={false} gateWidth={gateWidth} hRepeatFn={hRepeat} vRepeat={vRepeat} textureUrl={textureUrl}
         />
       ) : (
         <SolidWall
           wallCenter={[w, wallY, d / 2]} wallLength={d} wallY={wallY} capY={capY}
-          isHorizontal={false} hRepeat={hRepeat(d)} vRepeat={vRepeat}
+          isHorizontal={false} hRepeat={hRepeat(d)} vRepeat={vRepeat} textureUrl={textureUrl}
         />
       )}
 
       {/* ── Corner pillars ── */}
-      <Pillar position={[0, 0]} />
-      <Pillar position={[w, 0]} />
-      <Pillar position={[0, d]} />
-      <Pillar position={[w, d]} />
+      <Pillar position={[0, 0]} textureUrl={textureUrl} />
+      <Pillar position={[w, 0]} textureUrl={textureUrl} />
+      <Pillar position={[0, d]} textureUrl={textureUrl} />
+      <Pillar position={[w, d]} textureUrl={textureUrl} />
 
       {/* ── Gate model ── */}
       <Suspense fallback={null}>
