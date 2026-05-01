@@ -29,7 +29,7 @@
  *   // if undefined, fall back to GROUND_BASE_COLORS[land.ground_texture]
  */
 export const GROUND_TEXTURES = {
-  grass: '/textures/ground/brown_mud_leaves_01_diff_4k.jpg',
+  grass: '/textures/ground/grass_1k.png',
   stone_paving: '/textures/ground/stone_tiles.jpg',
   // bare_earth:   '/textures/ground/bare_earth_1k.jpg',
   // mixed:        '/textures/ground/mixed_1k.jpg',

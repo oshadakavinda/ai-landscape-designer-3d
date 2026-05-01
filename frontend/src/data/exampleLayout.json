@@ -86,7 +86,7 @@
     {
       "id": "obj_005",
       "type": "trees",
-      "variant": "tree_palm_01",
+      "variant": "maple_tree",
       "x": 10.0,
       "y": 0.0,
       "width": 4.0,
@@ -114,7 +114,7 @@
     {
       "id": "obj_007",
       "type": "trees",
-      "variant": "tree_palm_01",
+      "variant": "maple_tree",
       "x": 0.0,
       "y": 19.5,
       "width": 4.0,

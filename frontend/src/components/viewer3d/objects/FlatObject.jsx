@@ -14,8 +14,13 @@ import { useSceneTexture } from '../../../hooks/useSceneTexture';
  *  The texture tiles automatically based on the object's physical dimensions.
  */
 export default function FlatObject({ obj }) {
-  const cx = obj.x + obj.width / 2;
-  const cz = obj.y + obj.depth / 2;
+  const rot = obj.rotation || 0;
+  const isSwapped = Math.abs(rot) === 90 || Math.abs(rot) === 270;
+  const w = isSwapped ? obj.depth : obj.width;
+  const d = isSwapped ? obj.width : obj.depth;
+
+  const cx = obj.x + w / 2;
+  const cz = obj.y + d / 2;
   const h  = obj.height ?? FALLBACK_HEIGHTS[obj.type] ?? 0.05;
 
   const texPath = SURFACE_TEXTURES[obj.material];
@@ -30,7 +35,12 @@ export default function FlatObject({ obj }) {
   const isWater = obj.material === 'water';
 
   return (
-    <mesh position={[cx, GROUND_HEIGHT + h / 2 + LIFT, cz]} castShadow receiveShadow>
+    <mesh 
+      position={[cx, GROUND_HEIGHT + h / 2 + LIFT, cz]} 
+      rotation={[0, (rot * Math.PI) / 180, 0]}
+      castShadow 
+      receiveShadow
+    >
       <boxGeometry args={[obj.width, h, obj.depth]} />
       <meshStandardMaterial
         map={texture}
