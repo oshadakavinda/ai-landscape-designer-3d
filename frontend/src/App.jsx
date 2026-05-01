@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import LayoutForm from './components/sidebar/LayoutForm';
-import ObjectInspector from './components/sidebar/ObjectInspector';
+
 import TopViewSvg from './components/viewer2d/TopViewSvg';
 import ThreeDViewer from './components/viewer3d/index';
 import ScorePanel from './components/ScorePanel';
@@ -131,7 +131,7 @@ export default function App() {
           <div className="sidebar-top">
             <LayoutForm onGenerate={handleGenerate} isLoading={isLoading} />
           </div>
-          <ObjectInspector layout={layout} />
+
         </aside>
 
 
@@ -165,13 +165,7 @@ export default function App() {
             >
               🚶 Walk
             </button>
-            <button
-              className={`view-tab ${activeTab === 'debug' ? 'active' : ''}`}
-              onClick={() => { setActiveTab('debug'); setWalkMode(false); }}
-              title="View last JSON request sent to API"
-            >
-              ⌨️ Request
-            </button>
+
             {layout && (
               <span style={{ marginLeft: 'auto', fontSize: '0.72rem', color: 'var(--text-muted)' }}>
                 {layout.objects.length} objects · {(layout.pathways || []).length} paths
@@ -196,20 +190,7 @@ export default function App() {
               </div>
             )}
 
-            {/* Request Payload View */}
-            {activeTab === 'debug' && (
-              <div className="debug-viewer">
-                <div className="debug-header">
-                  <h3>JSON Request Payload</h3>
-                  <button className="btn-copy" onClick={() => navigator.clipboard.writeText(JSON.stringify(lastRequest, null, 2))}>
-                    📋 Copy JSON
-                  </button>
-                </div>
-                <pre className="debug-code">
-                  {lastRequest ? JSON.stringify(lastRequest, null, 2) : '// No request sent yet'}
-                </pre>
-              </div>
-            )}
+
 
             {/* 2D viewer — always shown when layout is ready and 2D is active */}
             {layout && !isLoading && activeTab === '2d' && (

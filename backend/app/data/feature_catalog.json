@@ -116,19 +116,6 @@
       ]
     },
     {
-      "type": "open_car_park",
-      "variants": [
-        {
-          "id": "car_park_open_01",
-          "width": 3.0,
-          "depth": 5.5,
-          "height": 0.05,
-          "render_type": "flat",
-          "material": "concrete"
-        }
-      ]
-    },
-    {
       "type": "well",
       "variants": [
         {

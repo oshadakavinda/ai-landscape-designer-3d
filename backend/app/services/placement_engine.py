@@ -256,11 +256,47 @@ def place_objects(
         gw, gd = dims["width"], dims["depth"]
         
         # Snap gate to road edge and align with house
-        if road == "south": gx, gy = house.x + house.width / 2 - gw / 2, 0
-        elif road == "north": gx, gy = house.x + house.width / 2 - gw / 2, land_d - gd
-        elif road == "east": gx, gy = land_w - gd, house.y + house.depth / 2 - gw / 2
-        elif road == "west": gx, gy = 0, house.y + house.depth / 2 - gw / 2
-        else: gx, gy = 0, 0
+        # Dynamic: if zone is specified (e.g. south_east), shift towards that side of the house
+        pref_zone = gate_intent.get("zone", "").lower()
+        
+        if road == "south":
+            center_x = house.x + house.width / 2
+            if "east" in pref_zone:
+                gx = min(land_w - gw, house.x + house.width - gw)
+            elif "west" in pref_zone:
+                gx = max(0, house.x)
+            else:
+                gx = center_x - gw / 2
+            gy = 0
+        elif road == "north":
+            center_x = house.x + house.width / 2
+            if "east" in pref_zone:
+                gx = min(land_w - gw, house.x + house.width - gw)
+            elif "west" in pref_zone:
+                gx = max(0, house.x)
+            else:
+                gx = center_x - gw / 2
+            gy = land_d - gd
+        elif road == "east":
+            center_y = house.y + house.depth / 2
+            if "north" in pref_zone:
+                gy = min(land_d - gw, house.y + house.depth - gw)
+            elif "south" in pref_zone:
+                gy = max(0, house.y)
+            else:
+                gy = center_y - gw / 2
+            gx = land_w - gd
+        elif road == "west":
+            center_y = house.y + house.depth / 2
+            if "north" in pref_zone:
+                gy = min(land_d - gw, house.y + house.depth - gw)
+            elif "south" in pref_zone:
+                gy = max(0, house.y)
+            else:
+                gy = center_y - gw / 2
+            gx = 0
+        else:
+            gx, gy = 0, 0
         
         gate_data = DotDict({
             "id": "gate_01",
@@ -319,7 +355,8 @@ def place_objects(
                 max_y = max(p1[1], p2[1]) + pw.width/2
                 placed_rects.append({"x": min_x, "y": min_y, "w": max_x - min_x, "d": max_y - min_y})
         else:
-            unplaced.append(UnplacedOutput(type=obj_type, reason="Could not route path."))
+            if obj_type != "driveway":
+                unplaced.append(UnplacedOutput(type=obj_type, reason="Could not route path."))
 
     # ── 3. Place Car Park ────────────────────────────────────────────────
     # Look for car park intent from LLM

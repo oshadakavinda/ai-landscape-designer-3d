@@ -7,9 +7,6 @@ export const FEATURES = [
   { key: 'vegetable_beds', label: '🥦 Veggie Beds' },
   { key: 'bush', label: '🪴 Bush' },
   { key: 'pathway', label: '🪨 Pathway' },
-  { key: 'driveway', label: '🛣️ Driveway' },
-  { key: 'garden_lights', label: '💡 Lights' },
-  { key: 'seating_area', label: '🛋️ Seating' },
   { key: 'well', label: '🪣 Well' },
 ];
 
@@ -22,7 +19,6 @@ export const OBJECT_COLORS = {
   vegetable_beds: '#86efac',
   bush: '#84cc16',
   pathway: '#d4d4aa',
-  driveway: '#9ca3af',
   garden_lights: '#fde68a',
   seating_area: '#c4b5fd',
   open_car_park: '#94a3b8',
@@ -39,7 +35,6 @@ export const OBJECT_COLORS_3D = {
   vegetable_beds: '#15803d',
   bush: '#4d7c0f',
   pathway: '#b5b39a',
-  driveway: '#6b7280',
   garden_lights: '#f59e0b',
   seating_area: '#7c3aed',
   open_car_park: '#475569',
@@ -76,6 +71,6 @@ export const OBJECT_DIMENSIONS = {
   'flower_bed_round_01': { width: 0.5, depth: 0.5, height: 0.1 },
   'fountain_round_01': { width: 1, depth: 1.5, height: 0.1 },
   'path_stone_01': { width: 1.2, depth: 1.2, height: 0.05 },
-  'well_01': { width: 1.5, depth: 1.5, height: 2.0 },
+  'well_01': { width: 2.5, depth: 2.5, height: 2.5 },
   'default': { width: 1.0, depth: 1.0, height: 1.0 }
 };

@@ -229,7 +229,7 @@ function SplitWall({ wallLength, fixedCoord, wallY, capY, isHorizontal, gateWidt
 }
 
 // ─── Main component ──────────────────────────────────────────────────────────
-export default function BoundaryWall({ land, gate }) {
+export default function BoundaryWall({ land, gate, house }) {
   // Use gate from layout if provided, otherwise default to land center
   const gateWidth = gate ? gate.width : 3.5;
   
@@ -246,6 +246,9 @@ export default function BoundaryWall({ land, gate }) {
 
   // Determine gate position and rotation based on road direction
   const gateConfig = useMemo(() => {
+    const houseCenterX = house ? house.x + house.width / 2 : w / 2;
+    const houseCenterY = house ? house.y + house.depth / 2 : d / 2;
+
     if (gate) {
       return { 
         pos: [gate.x + gate.width/2, GROUND_HEIGHT, gate.y + gate.depth/2], 
@@ -258,17 +261,17 @@ export default function BoundaryWall({ land, gate }) {
     // Fallback if no gate is provided in layout
     switch (road) {
       case 'south':
-        return { pos: [w / 2, GROUND_HEIGHT, 0], rot: [0, 0, 0] };
+        return { pos: [houseCenterX, GROUND_HEIGHT, 0], rot: [0, 0, 0] };
       case 'north':
-        return { pos: [w / 2, GROUND_HEIGHT, d], rot: [0, Math.PI, 0] };
+        return { pos: [houseCenterX, GROUND_HEIGHT, d], rot: [0, Math.PI, 0] };
       case 'east':
-        return { pos: [w, GROUND_HEIGHT, d / 2], rot: [0, -Math.PI / 2, 0] };
+        return { pos: [w, GROUND_HEIGHT, houseCenterY], rot: [0, -Math.PI / 2, 0] };
       case 'west':
-        return { pos: [0, GROUND_HEIGHT, d / 2], rot: [0, Math.PI / 2, 0] };
+        return { pos: [0, GROUND_HEIGHT, houseCenterY], rot: [0, Math.PI / 2, 0] };
       default:
-        return { pos: [w / 2, GROUND_HEIGHT, 0], rot: [0, 0, 0] };
+        return { pos: [houseCenterX, GROUND_HEIGHT, 0], rot: [0, 0, 0] };
     }
-  }, [road, w, d, gate]);
+  }, [road, w, d, gate, house]);
 
   // Helper: is a given wall the road-facing one?
   const isRoadWall = (side) => side === road;
@@ -280,7 +283,7 @@ export default function BoundaryWall({ land, gate }) {
         <SplitWall
           wallLength={w} fixedCoord={d} wallY={wallY} capY={capY}
           isHorizontal gateWidth={gateWidth} hRepeatFn={hRepeat} vRepeat={vRepeat} textureUrl={textureUrl}
-          mid={gate ? (gate.x + gate.width/2) : (w/2)} 
+          mid={gate ? (gate.x + gate.width/2) : (house ? house.x + house.width / 2 : w / 2)} 
 
         />
       ) : (
@@ -295,7 +298,7 @@ export default function BoundaryWall({ land, gate }) {
         <SplitWall
           wallLength={w} fixedCoord={0} wallY={wallY} capY={capY}
           isHorizontal gateWidth={gateWidth} hRepeatFn={hRepeat} vRepeat={vRepeat} textureUrl={textureUrl}
-          mid={gate ? (gate.x + gate.width/2) : (w/2)}
+          mid={gate ? (gate.x + gate.width/2) : (house ? house.x + house.width / 2 : w / 2)}
 
         />
       ) : (
@@ -310,7 +313,7 @@ export default function BoundaryWall({ land, gate }) {
         <SplitWall
           wallLength={d} fixedCoord={0} wallY={wallY} capY={capY}
           isHorizontal={false} gateWidth={gateWidth} hRepeatFn={hRepeat} vRepeat={vRepeat} textureUrl={textureUrl}
-          mid={gate ? (gate.y + gate.depth/2) : (d/2)}
+          mid={gate ? (gate.y + gate.depth/2) : (house ? house.y + house.depth / 2 : d / 2)}
 
         />
       ) : (
@@ -325,7 +328,7 @@ export default function BoundaryWall({ land, gate }) {
         <SplitWall
           wallLength={d} fixedCoord={w} wallY={wallY} capY={capY}
           isHorizontal={false} gateWidth={gateWidth} hRepeatFn={hRepeat} vRepeat={vRepeat} textureUrl={textureUrl}
-          mid={gate ? (gate.y + gate.depth/2) : (d/2)}
+          mid={gate ? (gate.y + gate.depth/2) : (house ? house.y + house.depth / 2 : d / 2)}
 
         />
       ) : (

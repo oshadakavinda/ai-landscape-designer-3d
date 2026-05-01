@@ -80,7 +80,7 @@ export default function ThreeDViewer({ layout, walkMode = false }) {
 
       <Suspense fallback={null}>
         <LandBoundary land={land} />
-        <BoundaryWall land={land} gate={layout.gate} />
+        <BoundaryWall land={land} gate={layout.gate} house={house} />
         <Road land={land} direction={land.road_direction} />
 
         <Grid

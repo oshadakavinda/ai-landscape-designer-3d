@@ -42,7 +42,7 @@ export default function LayoutForm({ onGenerate, isLoading }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    
+
     // Auto-calculate car park size based on vehicles
     // Standard: 3m width per car, 5.5m depth
     const vCount = form.vehicle_count;
@@ -58,7 +58,7 @@ export default function LayoutForm({ onGenerate, isLoading }) {
     });
   };
 
-  const vastuPct   = (form.vastu_priority / 10) * 100;
+  const vastuPct = (form.vastu_priority / 10) * 100;
   const vastuLabel = form.vastu_priority <= 3 ? 'Low' : form.vastu_priority <= 7 ? 'Medium' : 'High';
 
   return (
@@ -109,8 +109,7 @@ export default function LayoutForm({ onGenerate, isLoading }) {
 
       {/* ── Car Park Config ── */}
       <div className="sidebar-section">
-        <div className="section-label">🚗 Car Park Configuration</div>
-        <p className="section-hint">Size calculated automatically based on vehicle count.</p>
+        <div className="section-label">Car Park Configuration</div>
         <div className="form-group">
           <label>Parking Type</label>
           <select value={form.car_park.type} onChange={e => setNested('car_park', 'type', e.target.value)}>
@@ -151,10 +150,10 @@ export default function LayoutForm({ onGenerate, isLoading }) {
           <label>Ground Texture</label>
           <select value={form.ground_texture} onChange={e => setTop('ground_texture', e.target.value)}>
             {[
-              { value: 'grass',        label: '🌿 Grass' },
+              { value: 'grass', label: '🌿 Grass' },
               { value: 'stone_paving', label: '🪨 Stone Paving' },
-              { value: 'bare_earth',   label: '🟤 Bare Earth' },
-              { value: 'mixed',        label: '🎨 Mixed' },
+              { value: 'bare_earth', label: '🟤 Bare Earth' },
+              { value: 'mixed', label: '🎨 Mixed' },
             ].map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
           </select>
         </div>
@@ -162,7 +161,7 @@ export default function LayoutForm({ onGenerate, isLoading }) {
           <label>Wall Texture</label>
           <select value={form.wall_texture} onChange={e => setTop('wall_texture', e.target.value)}>
             {[
-              { value: 'brick',    label: '🧱 Brick' },
+              { value: 'brick', label: '🧱 Brick' },
               { value: 'concrete', label: '🏢 Concrete' },
             ].map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
           </select>

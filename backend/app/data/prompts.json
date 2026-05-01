@@ -49,7 +49,6 @@
     "- If car_park width is 6m or more, prefer gate_double_01",
     "- If car_park width is under 6m, prefer gate_single_01",
     "- A 'driveway' MUST be placed to connect the gate to the car_park/garage",
-    "- For driveway, variant MUST be driveway_concrete_01",
     "- Keep the driveway short and direct from gate to car_park/garage",
     "- The pedestrian pathway must connect gate/road to the house entrance",
     "- Driveway and pedestrian pathway may touch at the gate only",
