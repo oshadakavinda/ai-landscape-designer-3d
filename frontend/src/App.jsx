@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import LayoutForm from './components/sidebar/LayoutForm';
-import ObjectInspector from './components/sidebar/ObjectInspector';
+import DesignInspector from './components/sidebar/DesignInspector';
 
 import TopViewSvg from './components/viewer2d/TopViewSvg';
 import ThreeDViewer from './components/viewer3d/index';
@@ -124,7 +124,19 @@ export default function App() {
     }));
   };
 
-  const selectedObject = layout?.objects?.find(obj => obj.id === selectedId);
+  const handleUpdateLayout = (updates) => {
+    setLayout(prev => ({
+      ...prev,
+      ...updates
+    }));
+  };
+
+  const handleStartOver = () => {
+    setLayout(null);
+    setSelectedId(null);
+    setLastFormData(null);
+    setLastRequest(null);
+  };
 
   return (
     <div className="app-shell">
@@ -143,16 +155,19 @@ export default function App() {
       <div className="app-body">
         {/* ── Sidebar ── */}
         <aside className="sidebar">
-          <div className="sidebar-top">
-            <LayoutForm onGenerate={handleGenerate} isLoading={isLoading} />
-          </div>
-
-          {selectedObject && (
-            <ObjectInspector 
-              selectedObject={selectedObject} 
-              onUpdate={handleUpdateObject}
-              onClose={() => setSelectedId(null)}
+          {layout && !isLoading ? (
+            <DesignInspector 
+              layout={layout}
+              onUpdateLayout={handleUpdateLayout}
+              selectedObject={layout.objects.find(obj => obj.id === selectedId)}
+              onUpdateObject={handleUpdateObject}
+              onSelect={setSelectedId}
+              onStartOver={handleStartOver}
             />
+          ) : (
+            <div className="sidebar-top">
+              <LayoutForm onGenerate={handleGenerate} isLoading={isLoading} />
+            </div>
           )}
         </aside>
 

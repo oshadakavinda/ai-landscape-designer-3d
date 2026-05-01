@@ -139,33 +139,42 @@ body {
 }
 
 
-.object-inspector h3 {
-  font-size: 0.7rem;
-  text-transform: uppercase;
-  letter-spacing: 1.2px;
-  color: var(--accent-green);
-  margin-bottom: 14px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.object-inspector select {
-  margin-top: 4px;
-  background: rgba(255, 255, 255, 0.08);
-}
-
-.object-inspector .form-group label {
-  font-size: 0.65rem;
-  text-transform: uppercase;
-  color: var(--text-muted);
-}
-
 .object-details {
   background: rgba(0, 0, 0, 0.2);
   padding: 12px;
   border-radius: var(--radius-sm);
   border: 1px solid var(--border-subtle);
+}
+
+.design-inspector {
+  display: flex;
+  flex-direction: column;
+}
+
+.design-inspector .sidebar-section.active-selection {
+  background: rgba(99, 190, 123, 0.03);
+  border-left: 3px solid var(--accent-green);
+  transition: all var(--transition);
+}
+
+.design-inspector .hint-box {
+  background: rgba(255, 255, 255, 0.02);
+  padding: 16px 20px;
+}
+
+.btn-small {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+
+.btn-small:hover {
+  background: var(--accent-red);
+  border-color: var(--accent-red);
+  color: white;
 }
 
 
