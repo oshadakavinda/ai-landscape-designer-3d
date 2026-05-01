@@ -174,7 +174,7 @@ def modify_layout(
             for o in final_objects
         ]
 
-        new_objects, new_pathways, new_unplaced = place_objects(
+        new_objects, new_pathways, new_unplaced, _ = place_objects(
             add_intent, catalog_map, input_data
         )
 
