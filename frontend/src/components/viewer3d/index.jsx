@@ -23,6 +23,7 @@ import House from './scene/House';
 import Garage from './scene/Garage';
 import LandscapeObject from './objects/LandscapeObject';
 import PathwayMesh from './objects/PathwayMesh';
+import Compass from './scene/Compass';
 
 
 export default function ThreeDViewer({ layout, walkMode = false }) {
@@ -135,6 +136,9 @@ export default function ThreeDViewer({ layout, walkMode = false }) {
 
         {/* ── House (drawn last so it's always on top) ── */}
         <House house={house} />
+
+        {/* ── Compass (North Arrow) ── */}
+        <Compass land={land} />
       </Suspense>
     </Canvas>
   );

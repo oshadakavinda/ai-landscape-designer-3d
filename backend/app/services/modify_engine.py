@@ -174,7 +174,7 @@ def modify_layout(
             for o in final_objects
         ]
 
-        new_objects, new_pathways, new_unplaced = place_objects(
+        new_objects, new_pathways, new_unplaced, new_car_park, new_gate = place_objects(
             add_intent, catalog_map, input_data
         )
 
@@ -184,6 +184,8 @@ def modify_layout(
         kept_pathways.extend(new_pathways)
     else:
         new_unplaced = []
+        new_car_park = None
+        new_gate = None
 
     # ── 6. Re-number object IDs to keep them sequential ────────────────────
     for i, obj in enumerate(final_objects):
@@ -196,6 +198,8 @@ def modify_layout(
     updated_layout = LayoutOutput(
         land=current_layout.land,
         house=current_layout.house,
+        car_park=new_car_park if new_car_park else current_layout.car_park,
+        gate=new_gate if new_gate else getattr(current_layout, 'gate', None),
         zones=zones,
         objects=final_objects,
         pathways=kept_pathways,
