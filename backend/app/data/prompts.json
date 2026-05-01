@@ -185,8 +185,8 @@
       "variants": [
         {
           "id": "empty_garden",
-          "width": 10.0,
-          "depth": 10.0
+          "width": 5.0,
+          "depth": 5.0
         }
       ]
     },

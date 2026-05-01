@@ -157,8 +157,16 @@
       "variants": [
         {
           "id": "empty_garden",
-          "width": 10.0,
-          "depth": 10.0,
+          "width": 5.0,
+          "depth": 5.0,
+          "height": 0.2,
+          "render_type": "model",
+          "material": "soil"
+        },
+        {
+          "id": "vegetable_beds_1",
+          "width": 4.0,
+          "depth": 2.0,
           "height": 0.2,
           "render_type": "model",
           "material": "soil"
