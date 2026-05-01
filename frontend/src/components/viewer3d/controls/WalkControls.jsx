@@ -23,7 +23,7 @@ const EDGE_MARGIN    = PLAYER_RADIUS + 0.05;
 
 // Object types that have physical height the player can't walk through
 const SOLID_TYPES = new Set([
-  'trees', 'fountain', 'bench', 'covered_car_park',
+  'fountain', 'bench', 'covered_car_park',
   'garden_lights', 'seating_area',
 ]);
 
@@ -59,6 +59,9 @@ function buildColliders(house, car_park, objects) {
   }
 
   for (const obj of objects) {
+    // Explicitly allow walking through trees
+    if (obj.type === 'trees') continue;
+
     const isSolid = SOLID_TYPES.has(obj.type) || (obj.height != null && obj.height > 0.5);
     if (!isSolid) continue;
     boxes.push({

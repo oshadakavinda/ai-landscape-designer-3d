@@ -4,7 +4,8 @@
     "depth": 30.0,
     "unit": "m",
     "road_direction": "south",
-    "ground_texture": "grass"
+    "ground_texture": "grass",
+    "wall_texture": "brick"
   },
   "house": {
     "x": 5.0,
@@ -13,85 +14,78 @@
     "depth": 9.0
   },
   "zones": [
-    {
-      "id": "north",
-      "type": "north",
-      "x": 0.0,
-      "y": 15.0,
-      "width": 20.0,
-      "depth": 15.0
-    },
-    {
-      "id": "south",
-      "type": "south",
-      "x": 0.0,
-      "y": 0.0,
-      "width": 20.0,
-      "depth": 15.0
-    },
-    {
-      "id": "east",
-      "type": "east",
-      "x": 10.0,
-      "y": 0.0,
-      "width": 10.0,
-      "depth": 30.0
-    },
-    {
-      "id": "west",
-      "type": "west",
-      "x": 0.0,
-      "y": 0.0,
-      "width": 10.0,
-      "depth": 30.0
-    },
-    {
-      "id": "center",
-      "type": "center",
-      "x": 4.0,
-      "y": 6.0,
-      "width": 12.0,
-      "depth": 18.0
-    }
+    { "id": "north", "type": "north", "x": 0.0, "y": 15.0, "width": 20.0, "depth": 15.0 },
+    { "id": "south", "type": "south", "x": 0.0, "y": 0.0, "width": 20.0, "depth": 15.0 },
+    { "id": "east", "type": "east", "x": 10.0, "y": 0.0, "width": 10.0, "depth": 30.0 },
+    { "id": "west", "type": "west", "x": 0.0, "y": 0.0, "width": 10.0, "depth": 30.0 },
+    { "id": "center", "type": "center", "x": 4.0, "y": 6.0, "width": 12.0, "depth": 18.0 }
   ],
   "objects": [
     {
-      "id": "obj_003",
-      "type": "lawn",
-      "variant": "lawn_patch_01",
-      "x": 10.0,
-      "y": 17.5,
-      "width": 5.0,
-      "depth": 5.0,
-      "height": 0.02,
-      "rotation": 0.0,
-      "zoneId": "north_east",
-      "render_type": "flat",
-      "material": "grass"
-    },
-    {
-      "id": "obj_004",
+      "id": "obj_001",
       "type": "bench",
       "variant": "bench_wood_01",
-      "x": 10.0,
-      "y": 23.0,
-      "width": 2.0,
-      "depth": 1.0,
-      "height": 0.6,
+      "x": 16.5,
+      "y": 6.0,
+      "width": 3.0,
+      "depth": 1.4,
+      "height": 1.2,
+      "rotation": 0.0,
+      "zoneId": "north_west",
+      "render_type": "model",
+      "material": null
+    },
+    {
+      "id": "obj_002",
+      "type": "pond",
+      "variant": "pond_small_01",
+      "x": 1.0,
+      "y": 17.0,
+      "width": 2.5,
+      "depth": 2.5,
+      "height": 0.1,
+      "rotation": 0.0,
+      "zoneId": "north_east",
+      "render_type": "model",
+      "material": "water"
+    },
+    {
+      "id": "obj_003",
+      "type": "fountain",
+      "variant": "fountain_round_01",
+      "x": 12.5,
+      "y": 3.0,
+      "width": 1.5,
+      "depth": 1.5,
+      "height": 1.2,
       "rotation": 0.0,
       "zoneId": "north_east",
       "render_type": "model",
       "material": null
     },
     {
-      "id": "obj_005",
+      "id": "obj_004",
       "type": "trees",
       "variant": "maple_tree",
-      "x": 10.0,
-      "y": 0.0,
+      "x": 16.5,
+      "y": 16.0,
       "width": 4.0,
       "depth": 4.0,
-      "height": 5.0,
+      "height": 8.0,
+      "rotation": 0.0,
+      "zoneId": "north_west",
+      "render_type": "model",
+      "material": null
+    },
+    {
+      "id": "obj_005",
+      "type": "trees",
+      "variant": "oak_tree",
+      "x": 15.0,
+      "y": 0.5,
+      "width": 5.0,
+      "depth": 5.0,
+      "height": 6.0,
       "rotation": 0.0,
       "zoneId": "south_east",
       "render_type": "model",
@@ -100,28 +94,98 @@
     {
       "id": "obj_006",
       "type": "trees",
-      "variant": "tree_palm_01",
-      "x": 0.0,
-      "y": 15.0,
+      "variant": "pine_tree",
+      "x": 0.5,
+      "y": 26.0,
       "width": 4.0,
       "depth": 4.0,
-      "height": 5.0,
+      "height": 10.0,
       "rotation": 0.0,
-      "zoneId": "north_west",
+      "zoneId": "north",
       "render_type": "model",
       "material": null
     },
     {
       "id": "obj_007",
       "type": "trees",
-      "variant": "maple_tree",
-      "x": 0.0,
-      "y": 19.5,
+      "variant": "palm_tree",
+      "x": 16.0,
+      "y": 26.0,
       "width": 4.0,
       "depth": 4.0,
-      "height": 5.0,
+      "height": 7.0,
       "rotation": 0.0,
       "zoneId": "north",
+      "render_type": "model",
+      "material": null
+    },
+    {
+      "id": "obj_008",
+      "type": "flower_beds",
+      "variant": "flower_bed_rect_01",
+      "x": 5.5,
+      "y": 5.0,
+      "width": 3.0,
+      "depth": 1.5,
+      "height": 0.4,
+      "rotation": 0.0,
+      "zoneId": "north",
+      "render_type": "model",
+      "material": "flowers"
+    },
+    {
+      "id": "obj_009",
+      "type": "vegetable_beds",
+      "variant": "empty_garden",
+      "x": 4.5,
+      "y": 25.0,
+      "width": 5.0,
+      "depth": 5.0,
+      "height": 0.2,
+      "rotation": 0.0,
+      "zoneId": "north_east",
+      "render_type": "model",
+      "material": "soil"
+    },
+    {
+      "id": "obj_010",
+      "type": "bush",
+      "variant": "bush_01",
+      "x": 0.5,
+      "y": 8.0,
+      "width": 1.0,
+      "depth": 1.0,
+      "height": 1.0,
+      "rotation": 0.0,
+      "zoneId": "west",
+      "render_type": "model",
+      "material": "leaves"
+    },
+    {
+      "id": "obj_011",
+      "type": "bush",
+      "variant": "bush_01",
+      "x": 0.5,
+      "y": 10.0,
+      "width": 1.0,
+      "depth": 1.0,
+      "height": 1.0,
+      "rotation": 0.0,
+      "zoneId": "west",
+      "render_type": "model",
+      "material": "leaves"
+    },
+    {
+      "id": "obj_012",
+      "type": "well",
+      "variant": "well_01",
+      "x": 10.0,
+      "y": 26.0,
+      "width": 2.5,
+      "depth": 2.5,
+      "height": 2.5,
+      "rotation": 0.0,
+      "zoneId": "north_east",
       "render_type": "model",
       "material": null
     }
@@ -131,33 +195,36 @@
       "id": "path_001",
       "variant": "path_stone_01",
       "points": [
-        [
-          10.0,
-          0.0
-        ],
-        [
-          10.0,
-          8.0
-        ]
+        [10.0, 0.0],
+        [10.0, 8.0]
       ],
       "width": 1.2,
       "material": "stone"
     }
   ],
-  "unplaced": [
-    {
-      "type": "car_park",
-      "reason": "Variant 'car_park_01' not in catalog."
-    }
-  ],
+  "car_park": {
+    "x": 0.5,
+    "y": 0.5,
+    "width": 3.0,
+    "depth": 5.5,
+    "type": "covered",
+    "rotation": 0
+  },
+  "gate": {
+    "x": 8.0,
+    "y": 0.0,
+    "width": 4.0,
+    "depth": 0.2
+  },
+  "unplaced": [],
   "scores": {
-    "vastuScore": 65,
-    "sustainabilityScore": 24,
-    "coolingScore": 20,
-    "spaceUtilizationScore": 28
+    "vastuScore": 72,
+    "sustainabilityScore": 45,
+    "coolingScore": 38,
+    "spaceUtilizationScore": 55
   },
   "recommendations": [
-    "Vastu priority 5/10 applied.",
-    "5 features placed, 1 pathways routed, 1 could not fit."
+    "Example layout with all feature types.",
+    "12 features placed, 1 pathway routed."
   ]
 }

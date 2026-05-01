@@ -26,7 +26,7 @@ import PathwayMesh from './objects/PathwayMesh';
 import Compass from './scene/Compass';
 
 
-export default function ThreeDViewer({ layout, walkMode = false }) {
+export default function ThreeDViewer({ layout, walkMode = false, selectedId, onSelect }) {
   if (!layout) return null;
 
   const { land, house, objects = [], pathways = [] } = layout;
@@ -36,6 +36,7 @@ export default function ThreeDViewer({ layout, walkMode = false }) {
   return (
     <Canvas
       shadows
+      onPointerMissed={() => onSelect(null)}
       camera={{
         position: walkMode
           ? [land.width / 2, GROUND_HEIGHT + 1.7, land.depth / 2 + land.depth * 0.35]
@@ -103,7 +104,12 @@ export default function ThreeDViewer({ layout, walkMode = false }) {
 
         {/* ── Landscape objects ── */}
         {objects.map(obj => (
-          <LandscapeObject key={obj.id} obj={obj} />
+          <LandscapeObject 
+            key={obj.id} 
+            obj={obj} 
+            isSelected={selectedId === obj.id}
+            onSelect={() => onSelect(obj.id)}
+          />
         ))}
 
         {/* ── Car Park ── */}

@@ -40,6 +40,7 @@ export default function House({ house }) {
 
   const wallTexture = useTexture('/textures/wall_texture.jpg');
   const roofTexture = useTexture('/textures/roof_texture.jpg');
+  const doorTexture = useTexture('/textures/wood-texture.jpg');
 
   const wallMap = useMemo(() => {
     const t = wallTexture.clone();
@@ -58,6 +59,15 @@ export default function House({ house }) {
     t.needsUpdate = true;
     return t;
   }, [roofTexture, depth]);
+
+  const doorMap = useMemo(() => {
+    const t = doorTexture.clone();
+    t.wrapS = THREE.RepeatWrapping;
+    t.wrapT = THREE.RepeatWrapping;
+    t.repeat.set(1, 1);
+    t.needsUpdate = true;
+    return t;
+  }, [doorTexture]);
 
   return (
     <group 
@@ -80,7 +90,13 @@ export default function House({ house }) {
       {/* Decorative Door (always centered on the front face) */}
       <mesh position={[0, 1.1, depth / 2 + 0.01]} castShadow>
         <boxGeometry args={[1.0, 2.2, 0.05]} />
-        <meshStandardMaterial color="#1e293b" metalness={0.2} roughness={0.5} />
+        <meshStandardMaterial map={doorMap} color="#c49a6c" roughness={0.7} metalness={0.05} />
+      </mesh>
+
+      {/* Back Door (centered on the rear face, slightly smaller) */}
+      <mesh position={[0, 1.0, -depth / 2 - 0.01]} castShadow>
+        <boxGeometry args={[0.9, 2.0, 0.05]} />
+        <meshStandardMaterial map={doorMap} color="#c49a6c" roughness={0.7} metalness={0.05} />
       </mesh>
 
       {/* Windows - dynamic count based on width */}
@@ -92,6 +108,16 @@ export default function House({ house }) {
 function Windows({ width, depth, houseHeight }) {
   const windowSize = 0.8;
   const windowY = houseHeight * 0.6;
+
+  const windowTexture = useTexture('/textures/granulated-surface.jpg');
+  const windowMap = useMemo(() => {
+    const t = windowTexture.clone();
+    t.wrapS = THREE.RepeatWrapping;
+    t.wrapT = THREE.RepeatWrapping;
+    t.repeat.set(1, 1);
+    t.needsUpdate = true;
+    return t;
+  }, [windowTexture]);
   
   // Calculate spacing for windows on the front/back
   const numWindowsFront = Math.max(0, Math.floor(width / 2));
@@ -113,26 +139,26 @@ function Windows({ width, depth, houseHeight }) {
       {frontWindows.map((xPos, idx) => (
         <mesh key={`fw-${idx}`} position={[xPos, windowY, depth / 2 + 0.01]}>
           <boxGeometry args={[windowSize, windowSize, 0.05]} />
-          <meshStandardMaterial color="#0f172a" emissive="#1e293b" emissiveIntensity={0.2} />
+          <meshStandardMaterial map={windowMap} color="#94a3b8" roughness={0.4} metalness={0.3} />
         </mesh>
       ))}
 
-      {/* Back Windows (simpler) */}
+      {/* Back Windows */}
       {frontWindows.map((xPos, idx) => (
         <mesh key={`bw-${idx}`} position={[xPos, windowY, -depth / 2 - 0.01]}>
           <boxGeometry args={[windowSize, windowSize, 0.05]} />
-          <meshStandardMaterial color="#0f172a" />
+          <meshStandardMaterial map={windowMap} color="#94a3b8" roughness={0.4} metalness={0.3} />
         </mesh>
       ))}
       
       {/* Side Windows */}
       <mesh position={[width / 2 + 0.01, windowY, 0]}>
         <boxGeometry args={[0.05, windowSize, Math.min(depth * 0.6, 1.2)]} />
-        <meshStandardMaterial color="#0f172a" />
+        <meshStandardMaterial map={windowMap} color="#94a3b8" roughness={0.4} metalness={0.3} />
       </mesh>
       <mesh position={[-width / 2 - 0.01, windowY, 0]}>
         <boxGeometry args={[0.05, windowSize, Math.min(depth * 0.6, 1.2)]} />
-        <meshStandardMaterial color="#0f172a" />
+        <meshStandardMaterial map={windowMap} color="#94a3b8" roughness={0.4} metalness={0.3} />
       </mesh>
     </>
   );

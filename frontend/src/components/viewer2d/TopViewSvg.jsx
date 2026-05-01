@@ -9,7 +9,7 @@ import { MATERIAL_COLORS } from '../../constants/renderConfig';
 const PADDING    = 30;
 const LABEL_FONT = 9;
 
-export default function TopViewSvg({ layout }) {
+export default function TopViewSvg({ layout, selectedId, onSelect }) {
   if (!layout) return null;
 
   const { land, house, objects = [], pathways = [], zones = [] } = layout;
@@ -33,6 +33,7 @@ export default function TopViewSvg({ layout }) {
       <rect x={wx(0)} y={wy(land.depth)}
         width={land.width * scale} height={land.depth * scale}
         fill="url(#grid)" stroke="#3a9a54" strokeWidth="1.5" rx="2"
+        onClick={() => onSelect?.(null)}
       />
 
       {/* Zones */}
@@ -80,10 +81,16 @@ export default function TopViewSvg({ layout }) {
         const dims  = OBJECT_DIMENSIONS[obj.variant] || OBJECT_DIMENSIONS['default'];
         const w = dims.width * scale, h = dims.depth * scale;
         const x = wx(obj.x), y = wy(obj.y + dims.depth);
+        const isSelected = obj.id === selectedId;
         return (
-          <g key={obj.id}>
+          <g key={obj.id} onClick={(e) => { e.stopPropagation(); onSelect?.(obj.id); }} style={{ cursor: 'pointer' }}>
             <rect x={x} y={y} width={w} height={h}
-              fill={`${color}66`} stroke={color} strokeWidth="1" rx="2">
+              fill={isSelected ? 'var(--accent-green)' : `${color}66`} 
+              stroke={isSelected ? '#fff' : color} 
+              strokeWidth={isSelected ? '2' : '1'} 
+              rx="2"
+              style={{ transition: 'all 0.2s' }}
+            >
               <title>{obj.type} ({obj.variant})</title>
             </rect>
             {w > 18 && h > 10 && (

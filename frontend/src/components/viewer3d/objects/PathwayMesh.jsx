@@ -1,4 +1,6 @@
 import { useMemo } from 'react';
+import * as THREE from 'three';
+import { useTexture } from '@react-three/drei';
 import { MATERIAL_COLORS, GROUND_HEIGHT, LIFT } from '../../../constants/renderConfig';
 import LightPole from './LightPole';
 
@@ -9,6 +11,15 @@ import LightPole from './LightPole';
  */
 export default function PathwayMesh({ pathway }) {
   const color = MATERIAL_COLORS[pathway.material] || '#4a4540';
+
+  const pathTexture = useTexture('/textures/pathway-texture.jpg');
+  const pathMap = useMemo(() => {
+    const t = pathTexture.clone();
+    t.wrapS = THREE.RepeatWrapping;
+    t.wrapT = THREE.RepeatWrapping;
+    t.needsUpdate = true;
+    return t;
+  }, [pathTexture]);
 
   const { segments, lightPoles } = useMemo(() => {
     const segs = [];
@@ -49,12 +60,18 @@ export default function PathwayMesh({ pathway }) {
 
   return (
     <>
-      {segments.map((s, i) => (
-        <mesh key={`seg-${i}`} position={[s.cx, GROUND_HEIGHT + LIFT, s.cz]} rotation={[0, s.angle, 0]} receiveShadow>
-          <boxGeometry args={[pathway.width, 0.05, s.len]} />
-          <meshStandardMaterial color={color} roughness={0.9} />
-        </mesh>
-      ))}
+      {segments.map((s, i) => {
+        // Tile texture based on segment length
+        const segMap = pathMap.clone();
+        segMap.repeat.set(pathway.width, s.len / 2);
+        segMap.needsUpdate = true;
+        return (
+          <mesh key={`seg-${i}`} position={[s.cx, GROUND_HEIGHT + LIFT, s.cz]} rotation={[0, s.angle, 0]} receiveShadow>
+            <boxGeometry args={[pathway.width, 0.05, s.len]} />
+            <meshStandardMaterial map={segMap} color={color} roughness={0.85} />
+          </mesh>
+        );
+      })}
       
       {lightPoles.map((pole, i) => (
         <LightPole 
