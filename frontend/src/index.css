@@ -150,6 +150,25 @@ body {
   gap: 8px;
 }
 
+.object-inspector select {
+  margin-top: 4px;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.object-inspector .form-group label {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.object-details {
+  background: rgba(0, 0, 0, 0.2);
+  padding: 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-subtle);
+}
+
+
 .object-list {
   display: flex;
   flex-direction: column;

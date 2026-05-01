@@ -41,7 +41,7 @@
           "id": "fountain_round_01",
           "width": 1.5,
           "depth": 1.5,
-          "height": 1.5,
+          "height": 1.2,
           "render_type": "model",
           "material": null
         }
@@ -57,6 +57,38 @@
           "height": 8.0,
           "render_type": "model",
           "material": null
+        },
+        {
+          "id": "maple_tree",
+          "width": 4.0,
+          "depth": 4.0,
+          "height": 8.0,
+          "render_type": "model",
+          "material": null
+        },
+        {
+          "id": "pine_tree",
+          "width": 4.0,
+          "depth": 4.0,
+          "height": 10.0,
+          "render_type": "model",
+          "material": null
+        },
+        {
+          "id": "psx_birch_tree",
+          "width": 3.0,
+          "depth": 3.0,
+          "height": 8.0,
+          "render_type": "model",
+          "material": null
+        },
+        {
+          "id": "oak_tree",
+          "width": 10.0,
+          "depth": 10.0,
+          "height": 10.0,
+          "render_type": "model",
+          "material": null
         }
       ]
     },
@@ -66,8 +98,8 @@
         {
           "id": "flower_bed_rect_01",
           "width": 3.0,
-          "depth": 1.0,
-          "height": 0.15,
+          "depth": 1.5,
+          "height": 0.4,
           "render_type": "model",
           "material": "flowers"
         },
@@ -120,11 +152,50 @@
       "variants": [
         {
           "id": "well_01",
-          "width": 1.5,
-          "depth": 1.5,
-          "height": 2.0,
+          "width": 2.5,
+          "depth": 2.5,
+          "height": 2.5,
           "render_type": "model",
           "material": null
+        }
+      ]
+    },
+    {
+      "type": "vegetable_beds",
+      "variants": [
+        {
+          "id": "empty_garden",
+          "width": 10.0,
+          "depth": 10.0,
+          "height": 0.2,
+          "render_type": "model",
+          "material": "soil"
+        }
+      ]
+    },
+    {
+      "type": "garden_lights",
+      "variants": [
+        {
+          "id": "garden_light_pole",
+          "width": 0.3,
+          "depth": 0.3,
+          "height": 2.5,
+          "render_type": "model",
+          "material": "metal"
+        }
+      ]
+    },
+    {
+      "type": "gate",
+      "variants": [
+        {
+          "id": "gate",
+          "width": 4.0,
+          "depth": 0.2,
+          "height": 2.0,
+          "render_type": "model",
+          "material": "wood"
         }
       ]
     }

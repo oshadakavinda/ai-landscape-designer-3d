@@ -27,7 +27,6 @@ class LandscapeDesignInput(BaseModel):
     road_direction: Literal["north", "south", "east", "west"]
 
     vastu_priority: int = Field(..., ge=0, le=10)
-    garden_style: Literal["minimal", "family", "luxury", "agriculture", "mixed"]
     vehicle_count: int = Field(..., ge=0, le=4)
     optional_features: Dict[str, int] = Field(default_factory=dict)  # feature_type -> count
     ground_texture: Literal["grass", "stone_paving", "bare_earth", "mixed"] = "grass"

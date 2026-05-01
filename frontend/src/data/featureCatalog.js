@@ -1,13 +1,13 @@
 export const FEATURES = [
-  { key: 'bench', label: '🪑 Bench' },
-  { key: 'pond', label: '🏞️ Pond' },
-  { key: 'fountain', label: '⛲ Fountain' },
-  { key: 'trees', label: '🌳 Trees' },
-  { key: 'flower_beds', label: '🌸 Flower Beds' },
-  { key: 'vegetable_beds', label: '🥦 Veggie Beds' },
-  { key: 'bush', label: '🪴 Bush' },
-  { key: 'pathway', label: '🪨 Pathway' },
-  { key: 'well', label: '🪣 Well' },
+  { key: 'bench', label: 'Bench' },
+  { key: 'pond', label: 'Pond' },
+  { key: 'fountain', label: 'Fountain' },
+  { key: 'trees', label: 'Trees' },
+  { key: 'flower_beds', label: 'Flower Beds' },
+  { key: 'vegetable_beds', label: 'Veggie Beds' },
+  { key: 'bush', label: 'Bush' },
+  { key: 'pathway', label: 'Pathway' },
+  { key: 'well', label: 'Well' },
 ];
 
 export const OBJECT_COLORS = {
@@ -56,12 +56,19 @@ export const MODEL_PATHS = {
   'well_01': '/models/well/stone_well_stylized.glb',
   'bush_01': '/models/bush/small_bush.glb',
   'maple_tree': '/models/trees/maple_tree.glb',
+  'pine_tree': '/models/trees/pine_tree.glb',
+  'psx_birch_tree': '/models/trees/psx_birch_tree.glb',
+  'oak_tree': '/models/trees/oak_tree.glb',
+  'empty_garden': '/models/vegetable_beds/empty_garden.glb',
+  'vegetable_beds_1': '/models/vegetable_beds/vegetable_beds_1.glb',
+  'gate': '/models/gate/gate.glb',
+  'garden_light_pole': '/models/light/light_pole.glb',
 };
 
 export const OBJECT_DIMENSIONS = {
   'bench_wood_01': { width: 3.0, depth: 1.2, height: 1.0 },
   'bench_stone_01': { width: 3.5, depth: 1.4, height: 1.2 },
-  'pond_small_01': { width: 4.0, depth: 4.0, height: 0.3 },
+  'pond_small_01': { width: 2.5, depth: 2.5, height: 0.1 },
   'tree_palm_01': { width: 8.0, depth: 8.0, height: 8.0 },
   'maple_tree': { width: 4.0, depth: 4.0, height: 8.0 },
   'car_park_open_01': { width: 3.0, depth: 5.5, height: 0.1 },
@@ -72,5 +79,13 @@ export const OBJECT_DIMENSIONS = {
   'fountain_round_01': { width: 1, depth: 1.5, height: 0.1 },
   'path_stone_01': { width: 1.2, depth: 1.2, height: 0.05 },
   'well_01': { width: 2.5, depth: 2.5, height: 2.5 },
-  'default': { width: 1.0, depth: 1.0, height: 1.0 }
+  'default': { width: 1.0, depth: 1.0, height: 1.0 },
+  'pine_tree': { width: 4.0, depth: 4.0, height: 10.0 },
+  'psx_birch_tree': { width: 3.0, depth: 3.0, height: 8.0 },
+  'oak_tree': { width: 10.0, depth: 10.0, height: 10.0 },
+  'empty_garden': { width: 10.0, depth: 10.0, height: 0.2 },
+  'vegetable_beds_1': { width: 10.0, depth: 10.0, height: 0.2 },
+  'gate': { width: 4.0, depth: 0.2, height: 2.0 },
+  'garden_light_pole': { width: 0.3, depth: 0.3, height: 2.5 },
+  'default': { width: 1.0, depth: 1.0, height: 1.0 },
 };

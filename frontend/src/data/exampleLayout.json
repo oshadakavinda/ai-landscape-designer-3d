@@ -100,7 +100,7 @@
     {
       "id": "obj_006",
       "type": "trees",
-      "variant": "tree_palm_01",
+      "variant": "oak_tree",
       "x": 0.0,
       "y": 15.0,
       "width": 4.0,
@@ -114,7 +114,7 @@
     {
       "id": "obj_007",
       "type": "trees",
-      "variant": "maple_tree",
+      "variant": "pine_tree",
       "x": 0.0,
       "y": 19.5,
       "width": 4.0,
