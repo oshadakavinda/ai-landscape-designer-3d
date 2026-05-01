@@ -197,23 +197,22 @@ def _place_car_park(car_park_input, land_w, land_d, house, road_direction, prefe
     return None
 
 
-
 def place_objects(
-
     intent: list[dict],
     catalog_map: dict,
     input_data: LandscapeDesignInput,
+    existing_rects: list[dict] = None
 ) -> tuple[list[ObjectOutput], list[PathwayOutput], list[UnplacedOutput], any, any]:
     """
     Given LLM intent + catalog dimensions, compute exact object coordinates.
-    Returns (placed_objects, placed_pathways, unplaced_objects).
+    Returns (placed_objects, placed_pathways, unplaced_objects, car_park, gate).
     """
     land_w = input_data.land.width
     land_d = input_data.land.depth
     house = input_data.house
     road = input_data.road_direction
 
-    placed_rects: list[dict] = []
+    placed_rects: list[dict] = existing_rects[:] if existing_rects else []
     placed: list[ObjectOutput] = []
     pathways: list[PathwayOutput] = []
     unplaced: list[UnplacedOutput] = []
