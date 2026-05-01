@@ -41,7 +41,7 @@ function BoxFallback({ obj, cx, cz }) {
  * Pathways (render_type: "path") are handled separately by PathwayMesh,
  * as they come from layout.pathways, not layout.objects.
  */
-export default function LandscapeObject({ obj }) {
+export default function LandscapeObject({ obj, isSelected, onSelect }) {
   const dims       = OBJECT_DIMENSIONS[obj.variant] || OBJECT_DIMENSIONS['default'];
   const rot        = obj.rotation || 0;
   const isSwapped  = Math.abs(rot) === 90 || Math.abs(rot) === 270;
@@ -55,21 +55,39 @@ export default function LandscapeObject({ obj }) {
 
   // ── Flat plane objects ──────────────────────────────────────────────────
   if (renderType === 'flat') {
-    return <FlatObject obj={{ ...obj, ...dims }} />;
+    return (
+      <group onClick={(e) => { e.stopPropagation(); onSelect(); }}>
+        <FlatObject obj={{ ...obj, ...dims }} />
+        {isSelected && (
+          <mesh position={[cx, GROUND_HEIGHT + 0.05, cz]} rotation={[-Math.PI / 2, 0, 0]}>
+            <planeGeometry args={[obj.width + 0.2, obj.depth + 0.2]} />
+            <meshStandardMaterial color="#63be7b" wireframe />
+          </mesh>
+        )}
+      </group>
+    );
   }
 
   // ── Covered car park → procedural Garage ───────────────────────────────
   if (obj.type === 'covered_car_park') {
     const numVehicles = obj.numVehicles ?? 1;
     return (
-      <Garage
-        x={obj.x}
-        y={obj.y}
-        width={dims.width}
-        depth={dims.depth}
-        numVehicles={numVehicles}
-        rotation={obj.rotation ?? 0}
-      />
+      <group onClick={(e) => { e.stopPropagation(); onSelect(); }}>
+        <Garage
+          x={obj.x}
+          y={obj.y}
+          width={dims.width}
+          depth={dims.depth}
+          numVehicles={numVehicles}
+          rotation={obj.rotation ?? 0}
+        />
+        {isSelected && (
+          <mesh position={[cx, GROUND_HEIGHT + 1.0, cz]} rotation={[0, (obj.rotation * Math.PI) / 180, 0]}>
+            <boxGeometry args={[dims.width + 0.2, 2.2, dims.depth + 0.2]} />
+            <meshStandardMaterial color="#63be7b" wireframe transparent opacity={0.3} />
+          </mesh>
+        )}
+      </group>
     );
   }
 
@@ -81,16 +99,36 @@ export default function LandscapeObject({ obj }) {
 
   if (modelUrl) {
     return (
-      <group position={[cx, GROUND_HEIGHT + LIFT, cz]} rotation={[0, (obj.rotation * Math.PI) / 180, 0]}>
+      <group 
+        position={[cx, GROUND_HEIGHT + LIFT, cz]} 
+        rotation={[0, (obj.rotation * Math.PI) / 180, 0]}
+        onClick={(e) => { e.stopPropagation(); onSelect(); }}
+      >
         <ModelErrorBoundary fallback={<BoxFallback obj={obj} cx={0} cz={0} />}>
           <Suspense fallback={<BoxFallback obj={obj} cx={0} cz={0} />}>
             <GLBModel url={modelUrl} width={dims.width} depth={dims.depth} fixedHeight={fixedH} />
           </Suspense>
         </ModelErrorBoundary>
+        {isSelected && (
+          <mesh position={[0, fixedH ? fixedH / 2 : 0.5, 0]}>
+            <boxGeometry args={[dims.width + 0.1, fixedH || 1.0, dims.depth + 0.1]} />
+            <meshStandardMaterial color="#63be7b" wireframe transparent opacity={0.5} />
+          </mesh>
+        )}
       </group>
     );
   }
 
   // ── No GLB available → colored box ─────────────────────────────────────
-  return <BoxFallback obj={obj} cx={cx} cz={cz} />;
+  return (
+    <group onClick={(e) => { e.stopPropagation(); onSelect(); }}>
+      <BoxFallback obj={obj} cx={cx} cz={cz} />
+      {isSelected && (
+        <mesh position={[cx, GROUND_HEIGHT + 0.5, cz]} rotation={[0, (obj.rotation * Math.PI) / 180, 0]}>
+          <boxGeometry args={[dims.width + 0.1, 1.1, dims.depth + 0.1]} />
+          <meshStandardMaterial color="#63be7b" wireframe />
+        </mesh>
+      )}
+    </group>
+  );
 }

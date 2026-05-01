@@ -55,12 +55,12 @@ export const WALL_TEXTURES = {
  *   // if undefined, fall back to MATERIAL_COLORS[obj.material]
  */
 export const SURFACE_TEXTURES = {
-  // grass:    '/textures/surface/grass_patch_1k.jpg',   // ← Uncomment when file is added
-  // water:    '/textures/surface/water_1k.jpg',
-  // stone:    '/textures/surface/stone_1k.jpg',
-  // concrete: '/textures/surface/concrete_1k.jpg',
-  // flowers:  '/textures/surface/flowers_1k.jpg',
-  // soil:     '/textures/surface/soil_1k.jpg',
+  grass:    '/textures/ground/grass_1k.png',
+  water:    '/textures/surface/water_1k.jpg',
+  stone:    '/textures/ground/stone_tiles.jpg',
+  concrete: '/textures/concrete_texture.jpg',
+  flowers:  '/textures/surface/flowers_1k.jpg',
+  soil:     '/textures/ground/dry_floor.jpg',
 };
 
 /**

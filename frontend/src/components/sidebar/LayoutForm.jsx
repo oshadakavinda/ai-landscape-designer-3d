@@ -7,7 +7,6 @@ const DEFAULT_FORM = {
   car_park: { type: 'open' },
   road_direction: 'south',
   vastu_priority: 5,
-  garden_style: 'family',
   vehicle_count: 1,
   ground_texture: 'grass',
   wall_texture: 'brick',
@@ -65,7 +64,7 @@ export default function LayoutForm({ onGenerate, isLoading }) {
     <form onSubmit={handleSubmit}>
       {/* ── Land ── */}
       <div className="sidebar-section">
-        <div className="section-label">📐 Land Dimensions</div>
+        <div className="section-label">Land Dimensions</div>
         <div className="form-row">
           <div className="form-group">
             <label>Width</label>
@@ -82,7 +81,7 @@ export default function LayoutForm({ onGenerate, isLoading }) {
 
       {/* ── House ── */}
       <div className="sidebar-section">
-        <div className="section-label">🏠 House Placement</div>
+        <div className="section-label">House Placement</div>
         <div className="form-row">
           <div className="form-group">
             <label>Position X</label>
@@ -121,7 +120,7 @@ export default function LayoutForm({ onGenerate, isLoading }) {
 
       {/* ── Config ── */}
       <div className="sidebar-section">
-        <div className="section-label">⚙️ Site Configuration</div>
+        <div className="section-label">Site Configuration</div>
         <div className="form-row">
           <div className="form-group">
             <label>Road Direction</label>
@@ -139,21 +138,13 @@ export default function LayoutForm({ onGenerate, isLoading }) {
           </div>
         </div>
         <div className="form-group">
-          <label>Garden Style</label>
-          <select value={form.garden_style} onChange={e => setTop('garden_style', e.target.value)}>
-            {['minimal', 'family', 'luxury', 'agriculture', 'mixed'].map(s => (
-              <option key={s} value={s}>{s.charAt(0).toUpperCase() + s.slice(1)}</option>
-            ))}
-          </select>
-        </div>
-        <div className="form-group">
           <label>Ground Texture</label>
           <select value={form.ground_texture} onChange={e => setTop('ground_texture', e.target.value)}>
             {[
-              { value: 'grass', label: '🌿 Grass' },
-              { value: 'stone_paving', label: '🪨 Stone Paving' },
-              { value: 'bare_earth', label: '🟤 Bare Earth' },
-              { value: 'mixed', label: '🎨 Mixed' },
+              { value: 'grass', label: 'Grass' },
+              { value: 'stone_paving', label: 'Stone Paving' },
+              { value: 'bare_earth', label: 'Bare Earth' },
+              { value: 'mixed', label: 'Mixed' },
             ].map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
           </select>
         </div>
@@ -161,8 +152,8 @@ export default function LayoutForm({ onGenerate, isLoading }) {
           <label>Wall Texture</label>
           <select value={form.wall_texture} onChange={e => setTop('wall_texture', e.target.value)}>
             {[
-              { value: 'brick', label: '🧱 Brick' },
-              { value: 'concrete', label: '🏢 Concrete' },
+              { value: 'brick', label: 'Brick' },
+              { value: 'concrete', label: 'Concrete' },
             ].map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
           </select>
         </div>
@@ -186,7 +177,7 @@ export default function LayoutForm({ onGenerate, isLoading }) {
 
       {/* ── Features ── */}
       <div className="sidebar-section">
-        <div className="section-label">🌿 Landscape Features</div>
+        <div className="section-label">Landscape Features</div>
         <div className="feature-list">
           {FEATURES.filter(f => !f.key.includes('car_park')).map(({ key, label }) => {
             const count = form.optional_features[key] || 0;
@@ -217,7 +208,7 @@ export default function LayoutForm({ onGenerate, isLoading }) {
       {/* ── Submit ── */}
       <div className="sidebar-section">
         <button type="submit" className="btn-generate" disabled={isLoading}>
-          {isLoading ? <><span className="spinner" />Generating...</> : '✨ Generate Design'}
+          {isLoading ? <><span className="spinner" />Generating...</> : 'Generate Design'}
         </button>
       </div>
     </form>

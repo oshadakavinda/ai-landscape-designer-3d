@@ -411,57 +411,7 @@ def place_objects(
             placed_rects.append({"x": 0, "y": car_park_rect.y, "w": car_park_rect.x, "d": cd})
 
     FALLBACK_ORDER = ["north", "south", "east", "west",
-
                       "north_east", "north_west", "south_east", "south_west", "center"]
-
-    # ── Separate Pathways from Other Objects ─────────────────────────────
-    path_intents = [i for i in intent if catalog_map.get(i.get("variant"), {}).get("render_type") == "path"]
-    other_intents = [i for i in intent if catalog_map.get(i.get("variant"), {}).get("render_type") != "path"]
-    
-    path_count = 0
-    for item in path_intents:
-        obj_type = item.get("type", "unknown")
-        variant = item.get("variant", "")
-        preferred_zone = item.get("zone", "").lower().replace(" ", "_")
-        
-        # Skip car park/gate if they were in the list (already handled)
-        if obj_type in ["car_park", "garage", "gate"]:
-            continue
-            
-        dims = catalog_map.get(variant)
-        if not dims: continue
-        obj_w = dims["width"]
-        material = dims.get("material")
-
-        pw = _route_pathway(
-            variant=variant,
-            path_width=obj_w,
-            zone=preferred_zone,
-            land_w=land_w,
-            land_d=land_d,
-            house=house,
-            road_direction=road,
-            material=material,
-            idx=path_count + 1,
-            gate_data=gate_data
-        )
-        
-        if pw:
-            # Add to pathways output only if NOT a driveway
-            if obj_type != "driveway":
-                path_count += 1
-                pathways.append(pw)
-            
-            # Add segments to placed_rects for ALL paths (including driveway) to keep corridors clear
-            for i in range(len(pw.points) - 1):
-                p1, p2 = pw.points[i], pw.points[i+1]
-                min_x = min(p1[0], p2[0]) - pw.width/2
-                max_x = max(p1[0], p2[0]) + pw.width/2
-                min_y = min(p1[1], p2[1]) - pw.width/2
-                max_y = max(p1[1], p2[1]) + pw.width/2
-                placed_rects.append({"x": min_x, "y": min_y, "w": max_x - min_x, "d": max_y - min_y})
-        else:
-            unplaced.append(UnplacedOutput(type=obj_type, reason="Could not route path."))
 
     # ── 4. Place All Other Objects ────────────────────────────────────────
     for idx, item in enumerate(other_intents):

@@ -28,10 +28,10 @@ export default function ChatPrompt({ onModify, isLoading, hasLayout }) {
             <><span className="chat-spinner" /> Applying: "{lastAction.prompt}"</>
           )}
           {lastAction.status === 'success' && (
-            <>✅ Applied: "{lastAction.prompt}"</>
+            <>Applied: "{lastAction.prompt}"</>
           )}
           {lastAction.status === 'error' && (
-            <>❌ Failed: "{lastAction.prompt}"</>
+            <>Failed: "{lastAction.prompt}"</>
           )}
         </div>
       )}
@@ -54,7 +54,7 @@ export default function ChatPrompt({ onModify, isLoading, hasLayout }) {
           className="chat-send-btn"
           disabled={isLoading || !hasLayout || !prompt.trim()}
         >
-          {isLoading ? <span className="spinner" /> : '✨ Apply'}
+          {isLoading ? <span className="spinner" /> : 'Apply'}
         </button>
       </form>
     </div>

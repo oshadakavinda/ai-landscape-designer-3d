@@ -2,7 +2,7 @@
   "system_prompt": "You generate landscape layouts as JSON. Focus on object placements only. Do not include explanations.",
   "user_prompt_template": [
     "Land:{width}x{depth}{unit}. House@({house_x},{house_y}) size {house_w}x{house_d}.",
-    "Road:{road_direction}. Style:{garden_style}. Vastu:{vastu_priority}. Vehicles:{vehicle_count}. Features:{features}.",
+    "Road:{road_direction}. Vastu:{vastu_priority}. Vehicles:{vehicle_count}. Features:{features}.",
     "",
     "Rules:",
     "- Origin(0,0)=SW",
@@ -26,7 +26,7 @@
   ],
   "intent_system_prompt": "You are a landscape zone planner. Return ONLY a JSON array of placement intents — no markdown, no explanation.",
   "intent_prompt_template": [
-    "Land: {width}x{depth}{unit} | House at ({house_x},{house_y}) size {house_w}x{house_d} | Car Park: {car_park_info} | Road: {road_direction} | Style: {garden_style} | Vehicles: {vehicle_count}",
+    "Land: {width}x{depth}{unit} | House at ({house_x},{house_y}) size {house_w}x{house_d} | Car Park: {car_park_info} | Road: {road_direction} | Vehicles: {vehicle_count}",
     "Features requested ({features_count} types): {features}",
     "Vastu priority {vastu_priority}/10: {vastu_hint}",
     "Parking preferred zone: {parking_hint}",
@@ -45,9 +45,8 @@
     "- For road_direction=east, prefer car_park/garage zone north_east or south_east",
     "- For road_direction=west, prefer car_park/garage zone north_west or south_west",
     "- A 'gate' MUST be placed on the road-facing boundary",
-    "- For gate, variant MUST be either gate_single_01 or gate_double_01",
-    "- If car_park width is 6m or more, prefer gate_double_01",
-    "- If car_park width is under 6m, prefer gate_single_01",
+    "- For gate, variant MUST be 'gate'",
+    "- If car_park width is 6m or more, prefer a larger area for the car park",
     "- A 'driveway' MUST be placed to connect the gate to the car_park/garage",
     "- Keep the driveway short and direct from gate to car_park/garage",
     "- The pedestrian pathway must connect gate/road to the house entrance",
@@ -76,13 +75,13 @@
       "variants": [
         {
           "id": "bench_wood_01",
-          "width": 2.0,
-          "depth": 1.0
+          "width": 3.0,
+          "depth": 1.2
         },
         {
           "id": "bench_stone_01",
-          "width": 2.0,
-          "depth": 0.7
+          "width": 3.5,
+          "depth": 1.4
         }
       ]
     },
@@ -110,9 +109,24 @@
       "type": "trees",
       "variants": [
         {
-          "id": "tree_palm_01",
+          "id": "maple_tree",
           "width": 4.0,
           "depth": 4.0
+        },
+        {
+          "id": "pine_tree",
+          "width": 4.0,
+          "depth": 4.0
+        },
+        {
+          "id": "psx_birch_tree",
+          "width": 3.0,
+          "depth": 3.0
+        },
+        {
+          "id": "oak_tree",
+          "width": 10.0,
+          "depth": 10.0
         }
       ]
     },
@@ -122,7 +136,7 @@
         {
           "id": "flower_bed_rect_01",
           "width": 3.0,
-          "depth": 1.0
+          "depth": 1.5
         },
         {
           "id": "flower_bed_rect_02",
@@ -161,8 +175,38 @@
       "variants": [
         {
           "id": "well_01",
-          "width": 1.5,
-          "depth": 1.5
+          "width": 2.5,
+          "depth": 2.5
+        }
+      ]
+    },
+    {
+      "type": "vegetable_beds",
+      "variants": [
+        {
+          "id": "empty_garden",
+          "width": 10.0,
+          "depth": 10.0
+        }
+      ]
+    },
+    {
+      "type": "garden_lights",
+      "variants": [
+        {
+          "id": "garden_light_pole",
+          "width": 0.3,
+          "depth": 0.3
+        }
+      ]
+    },
+    {
+      "type": "gate",
+      "variants": [
+        {
+          "id": "gate",
+          "width": 4.0,
+          "depth": 0.2
         }
       ]
     }

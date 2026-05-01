@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import LayoutForm from './components/sidebar/LayoutForm';
+import DesignInspector from './components/sidebar/DesignInspector';
 
 import TopViewSvg from './components/viewer2d/TopViewSvg';
 import ThreeDViewer from './components/viewer3d/index';
@@ -14,7 +15,9 @@ export default function App() {
   const [activeTab, setActiveTab] = useState('2d');
   const [error, setError] = useState(null);
   // Track whether 3D has ever been opened — so we lazy-mount once and keep alive
-  const [has3dMounted, setHas3dMounted] = useState(false);  const [lastFormData, setLastFormData] = useState(null);
+  const [has3dMounted, setHas3dMounted] = useState(false);
+  const [selectedId, setSelectedId] = useState(null);
+  const [lastFormData, setLastFormData] = useState(null);
   const [lastRequest, setLastRequest] = useState(null);
   // Walk mode state
   const [walkMode, setWalkMode] = useState(false);
@@ -111,27 +114,61 @@ export default function App() {
     }
   };
 
+  const handleUpdateObject = (updates) => {
+    if (!selectedId || !layout) return;
+    setLayout(prev => ({
+      ...prev,
+      objects: prev.objects.map(obj => 
+        obj.id === selectedId ? { ...obj, ...updates } : obj
+      )
+    }));
+  };
+
+  const handleUpdateLayout = (updates) => {
+    setLayout(prev => ({
+      ...prev,
+      ...updates
+    }));
+  };
+
+  const handleStartOver = () => {
+    setLayout(null);
+    setSelectedId(null);
+    setLastFormData(null);
+    setLastRequest(null);
+  };
+
   return (
     <div className="app-shell">
       {/* ── Header ── */}
       <header className="app-header">
-        <div className="logo-icon">🌿</div>
+        <div className="logo-icon">L</div>
         <div className="header-titles">
           <h1>AI Landscape Designer</h1>
           <span className="subtitle">Powered by Gemini · Vastu-aware · 3D Interactive</span>
         </div>
         <button className="btn-example" onClick={handleUseExample}>
-          ✨ Use Example
+          Use Example
         </button>
       </header>
 
       <div className="app-body">
         {/* ── Sidebar ── */}
         <aside className="sidebar">
-          <div className="sidebar-top">
-            <LayoutForm onGenerate={handleGenerate} isLoading={isLoading} />
-          </div>
-
+          {layout && !isLoading ? (
+            <DesignInspector 
+              layout={layout}
+              onUpdateLayout={handleUpdateLayout}
+              selectedObject={layout.objects.find(obj => obj.id === selectedId)}
+              onUpdateObject={handleUpdateObject}
+              onSelect={setSelectedId}
+              onStartOver={handleStartOver}
+            />
+          ) : (
+            <div className="sidebar-top">
+              <LayoutForm onGenerate={handleGenerate} isLoading={isLoading} />
+            </div>
+          )}
         </aside>
 
 
@@ -144,7 +181,7 @@ export default function App() {
               className={`view-tab ${activeTab === '2d' ? 'active' : ''}`}
               onClick={() => { setActiveTab('2d'); setWalkMode(false); }}
             >
-              🗺️ 2D Plan
+              2D Plan
             </button>
             <button
               className={`view-tab ${activeTab === '3d' ? 'active' : ''}`}
@@ -155,7 +192,7 @@ export default function App() {
               }}
               disabled={!layout}
             >
-              🧊 3D View
+              3D View
             </button>
             <button
               className={`view-tab walk-tab ${activeTab === 'walk' ? 'active' : ''}`}
@@ -163,7 +200,7 @@ export default function App() {
               disabled={!layout}
               title="First-person walk mode — WASD to move, drag to look"
             >
-              🚶 Walk
+              Walk
             </button>
 
             {layout && (
@@ -178,14 +215,14 @@ export default function App() {
           <div className="canvas-container">
             {!layout && !isLoading && (
               <div className="empty-state">
-                <div className="empty-icon">🌱</div>
+                <div className="empty-icon">L</div>
                 <p>Configure your plot and click <strong>Generate Design</strong> to begin</p>
               </div>
             )}
 
             {isLoading && (
               <div className="empty-state">
-                <div style={{ fontSize: '2.5rem', animation: 'spin 1.5s linear infinite' }}>🌀</div>
+                <div style={{ fontSize: '2.5rem' }}>...</div>
                 <p style={{ color: 'var(--accent-green)' }}>Gemini is designing your landscape…</p>
               </div>
             )}
@@ -194,7 +231,11 @@ export default function App() {
 
             {/* 2D viewer — always shown when layout is ready and 2D is active */}
             {layout && !isLoading && activeTab === '2d' && (
-              <TopViewSvg layout={layout} />
+              <TopViewSvg 
+                layout={layout} 
+                selectedId={selectedId}
+                onSelect={setSelectedId}
+              />
             )}
 
             {/*
@@ -209,7 +250,12 @@ export default function App() {
                 visibility: (activeTab === '3d' || activeTab === 'walk') ? 'visible' : 'hidden',
                 pointerEvents: (activeTab === '3d' || activeTab === 'walk') ? 'auto' : 'none',
               }}>
-                <ThreeDViewer layout={layout} walkMode={walkMode} />
+                <ThreeDViewer 
+                  layout={layout} 
+                  walkMode={walkMode} 
+                  selectedId={selectedId}
+                  onSelect={setSelectedId}
+                />
 
                 {/* ── Walk Mode HUD ── */}
                 {walkMode && (
@@ -226,7 +272,7 @@ export default function App() {
                         }}
                       >
                         <div className="walk-capture-inner">
-                          <div className="walk-capture-icon">🖱️</div>
+                          <div className="walk-capture-icon">M</div>
                           <div className="walk-capture-title">Click to enter walk mode</div>
                           <div className="walk-capture-sub">Move mouse to look · WASD to walk · Esc to exit</div>
                         </div>
@@ -236,7 +282,7 @@ export default function App() {
                     {/* Key-hint HUD — fades in after lock acquired, disappears after 4 s */}
                     <div className={`walk-hud ${showWalkHud ? 'walk-hud-visible' : ''}`}>
                       <div className="walk-hud-inner">
-                        <div className="walk-hud-title">🚶 Walk Mode</div>
+                        <div className="walk-hud-title">Walk Mode</div>
                         <div className="walk-hud-keys">
                           <span className="walk-key">W A S D</span> Move
                           &nbsp;·&nbsp;
@@ -264,7 +310,7 @@ export default function App() {
           {/* Unplaced Banner */}
           {layout?.unplaced?.length > 0 && (
             <div className="unplaced-banner">
-              ⚠️ Unplaced:&nbsp;
+              Unplaced:&nbsp;
               {layout.unplaced.map((u, i) => (
                 <span key={i} style={{ marginRight: 16 }}>
                   <strong>{u.type}</strong> — {u.reason}
@@ -293,7 +339,7 @@ export default function App() {
       {/* Error Toast */}
       {error && (
         <div className="error-toast" onClick={() => setError(null)}>
-          ⚠️ {error}
+          {error}
         </div>
       )}
     </div>
