@@ -218,9 +218,11 @@ def modify_layout(
         new_car_park = None
         new_gate = None
 
-    # ── 6. Re-number object IDs to keep them sequential ────────────────────
+    # ── 6. Re-number IDs to keep them sequential ──────────────────────────
     for i, obj in enumerate(final_objects):
         obj.id = f"obj_{i + 1:03d}"
+    for i, pw in enumerate(kept_pathways):
+        pw.id = f"path_{i + 1:03d}"
 
     # ── 7. Build zones ─────────────────────────────────────────────────────
     zones = _build_zones(input_data.land.width, input_data.land.depth)

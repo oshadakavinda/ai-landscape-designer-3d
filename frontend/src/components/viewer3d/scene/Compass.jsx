@@ -7,31 +7,31 @@ export default function Compass({ land }) {
   const cz = 2.5;
   
   return (
-    <group position={[cx, GROUND_HEIGHT + 0.05, cz]}>
+    <group position={[cx, GROUND_HEIGHT + 0.5, cz]}>
       {/* Arrow shaft (cylinder) pointing towards +Z (North) */}
       <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, 0, 0.5]} receiveShadow castShadow>
-         <cylinderGeometry args={[0.08, 0.08, 2, 16]} />
-         <meshStandardMaterial color="#ef4444" roughness={0.5} />
+         <cylinderGeometry args={[0.15, 0.15, 2.5, 16]} />
+         <meshStandardMaterial color="#facc15" roughness={0.3} metalness={0.8} />
       </mesh>
       
       {/* Arrow tip (cone) pointing towards +Z (North) */}
-      <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, 0, 1.8]} receiveShadow castShadow>
-         <coneGeometry args={[0.25, 0.6, 16]} />
-         <meshStandardMaterial color="#ef4444" roughness={0.5} />
+      <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, 0, 2.1]} receiveShadow castShadow>
+         <coneGeometry args={[0.4, 0.8, 16]} />
+         <meshStandardMaterial color="#facc15" roughness={0.3} metalness={0.8} />
       </mesh>
       
-      {/* 'N' Text */}
+      {/* 'NORTH' Text */}
       <Text
-        position={[0, 0, 2.5]}
-        rotation={[-Math.PI / 2, 0, 0]}
-        fontSize={0.8}
+        position={[0, 0.5, 3.2]}
+        rotation={[-Math.PI / 4, 0, 0]}
+        fontSize={1.2}
         color="#ffffff"
         anchorX="center"
         anchorY="middle"
-        outlineWidth={0.02}
+        outlineWidth={0.05}
         outlineColor="#000000"
       >
-        N
+        NORTH
       </Text>
     </group>
   );

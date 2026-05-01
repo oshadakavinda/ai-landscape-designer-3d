@@ -305,9 +305,9 @@ def place_objects(
         )
         
         if pw:
+            path_count += 1
             # Add to pathways output only if NOT a driveway
             if obj_type != "driveway":
-                path_count += 1
                 pathways.append(pw)
             
             # Add segments to placed_rects for ALL paths (including driveway) to keep corridors clear
