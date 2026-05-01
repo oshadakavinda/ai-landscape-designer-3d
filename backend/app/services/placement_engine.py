@@ -64,16 +64,49 @@ def _try_place(
     """Scan the zone in a grid pattern and return the first valid (x, y), or None."""
     x_min, y_min, x_max, y_max = _zone_bounds(zone, land_w, land_d)
 
-    MARGIN = 0.5
+    MARGIN = 0.1
     x_start = max(x_min, MARGIN)
     y_start = max(y_min, MARGIN)
     x_limit = min(x_max, land_w - MARGIN)
     y_limit = min(y_max, land_d - MARGIN)
 
-    x = x_start
-    while x + obj_w <= x_limit:
-        y = y_start
-        while y + obj_d <= y_limit:
+    # Determine scan direction based on zone to prefer corners/boundaries
+    # For 'east' zones, scan from right to left. For 'north' zones, scan from top to bottom.
+    x_range = []
+    y_range = []
+    
+    step_val = max(step, 0.1)
+    
+    # X range
+    if "east" in zone:
+        # Scan from x_limit down to x_start
+        curr = x_limit - obj_w
+        while curr >= x_start:
+            x_range.append(curr)
+            curr -= step_val
+    else:
+        # Scan from x_start up to x_limit
+        curr = x_start
+        while curr + obj_w <= x_limit:
+            x_range.append(curr)
+            curr += step_val
+            
+    # Y range
+    if "north" in zone:
+        # Scan from y_limit down to y_start
+        curr = y_limit - obj_d
+        while curr >= y_start:
+            y_range.append(curr)
+            curr -= step_val
+    else:
+        # Scan from y_start up to y_limit
+        curr = y_start
+        while curr + obj_d <= y_limit:
+            y_range.append(curr)
+            curr += step_val
+
+    for x in x_range:
+        for y in y_range:
             if not _overlaps(x, y, obj_w, obj_d, house.x, house.y, house.width, house.depth):
                 # Also check car_park if it exists
                 cp_ok = True
@@ -88,9 +121,6 @@ def _try_place(
                     )
                     if ok:
                         return x, y
-
-            y += step
-        x += step
     return None
 
 
