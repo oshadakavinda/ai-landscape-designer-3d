@@ -1,7 +1,6 @@
-import { Text } from '@react-three/drei';
+import { Text, useTexture } from '@react-three/drei';
+import * as THREE from 'three';
 import { ROAD_TEXTURES, ROAD_TILE_SIZE } from '../../../constants/texturePaths';
-import { useSceneTexture } from '../../../hooks/useSceneTexture';
-
 export default function Road({ land, direction }) {
   const roadWidth = 4;
   const isHoriz = direction === 'north' || direction === 'south';
@@ -20,7 +19,12 @@ export default function Road({ land, direction }) {
   // Tile based on size. size[0] is width, size[2] is length/depth for the mesh
   const repeatX = Math.ceil(size[0] / ROAD_TILE_SIZE);
   const repeatZ = Math.ceil(size[2] / ROAD_TILE_SIZE);
-  const texture = useSceneTexture(texPath, repeatX, repeatZ);
+  
+  const texture = useTexture(texPath);
+  texture.wrapS = THREE.RepeatWrapping;
+  texture.wrapT = THREE.RepeatWrapping;
+  texture.repeat.set(repeatX, repeatZ);
+  texture.colorSpace = THREE.SRGBColorSpace;
 
   return (
     <group position={pos}>
