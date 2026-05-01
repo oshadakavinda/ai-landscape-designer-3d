@@ -67,6 +67,7 @@ export default function LandscapeObject({ obj }) {
     );
   }
 
+
   // ── 3D model objects ────────────────────────────────────────────────────
   const modelUrl       = MODEL_PATHS[obj.variant];
   const isArchitectural = ARCHITECTURAL_TYPES.has(obj.type);

@@ -40,9 +40,9 @@
       ]
     },
     {
-      "type": "lawn",
+      "type": "bush",
       "variants": [
-        { "id": "lawn_patch_01", "width": 5.0, "depth": 5.0 }
+        { "id": "bush_01", "width": 1.0, "depth": 1.0 }
       ]
     },
     {

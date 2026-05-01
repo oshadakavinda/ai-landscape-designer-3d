@@ -10,7 +10,7 @@ const DEFAULT_FORM = {
   garden_style: 'family',
   vehicle_count: 1,
   ground_texture: 'grass',
-  optional_features: { bench: 1, trees: 3, lawn: 1, pathway: 1 },
+  optional_features: { bench: 1, trees: 3, bush: 1, pathway: 1 },
 };
 
 export default function LayoutForm({ onGenerate, isLoading }) {

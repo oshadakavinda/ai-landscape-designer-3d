@@ -13,8 +13,8 @@ VASTU_PREFERRED = {
     "flower_beds": ["east", "west", "north"],
 }
 
-COOL_TYPES = {"trees", "pond", "fountain", "lawn", "well"}
-GREEN_TYPES = {"trees", "lawn", "flower_beds", "vegetable_beds", "pond", "fountain", "well"}
+COOL_TYPES = {"trees", "pond", "fountain", "bush", "well"}
+GREEN_TYPES = {"trees", "bush", "flower_beds", "vegetable_beds", "pond", "fountain", "well"}
 
 
 def calculate_scores(layout, input_data: LandscapeDesignInput) -> ScoresOutput:

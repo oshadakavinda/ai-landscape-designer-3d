@@ -238,7 +238,7 @@ def _mock_intent(input_data: LandscapeDesignInput) -> list[dict]:
         "trees":           {"variant": "tree_palm_01",     "zone": "north"},
         "flower_beds":     {"variant": "flower_bed_rect_01","zone": "north_west"},
         "vegetable_beds":  {"variant": "veg_bed_raised_01","zone": "west"},
-        "lawn":            {"variant": "lawn_patch_01",    "zone": "center"},
+        "bush":            {"variant": "bush_01",          "zone": "center"},
         "pathway":         {"variant": "path_stone_01",    "zone": "south"},
         "driveway":        {"variant": "driveway_paved_01","zone": "south"},
         "garden_lights":   {"variant": "light_post_01",    "zone": "south_east"},

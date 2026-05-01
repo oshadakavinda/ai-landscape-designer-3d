@@ -5,7 +5,7 @@ export const FEATURES = [
   { key: 'trees', label: '🌳 Trees' },
   { key: 'flower_beds', label: '🌸 Flower Beds' },
   { key: 'vegetable_beds', label: '🥦 Veggie Beds' },
-  { key: 'lawn', label: '🌿 Lawn' },
+  { key: 'bush', label: '🪴 Bush' },
   { key: 'pathway', label: '🪨 Pathway' },
   { key: 'driveway', label: '🛣️ Driveway' },
   { key: 'garden_lights', label: '💡 Lights' },
@@ -20,7 +20,7 @@ export const OBJECT_COLORS = {
   trees: '#4ade80',
   flower_beds: '#f472b6',
   vegetable_beds: '#86efac',
-  lawn: '#bbf7d0',
+  bush: '#84cc16',
   pathway: '#d4d4aa',
   driveway: '#9ca3af',
   garden_lights: '#fde68a',
@@ -37,7 +37,7 @@ export const OBJECT_COLORS_3D = {
   trees: '#166534',
   flower_beds: '#be185d',
   vegetable_beds: '#15803d',
-  lawn: '#16a34a',
+  bush: '#4d7c0f',
   pathway: '#b5b39a',
   driveway: '#6b7280',
   garden_lights: '#f59e0b',
@@ -59,6 +59,7 @@ export const MODEL_PATHS = {
   'fountain_round_01': '/models/fountain/fountain_round_01.glb',
   'path_stone_01': '/models/decor/path_stone_01.glb',
   'well_01': '/models/well/stone_well_stylized.glb',
+  'bush_01': '/models/bush/small_bush.glb',
 };
 
 export const OBJECT_DIMENSIONS = {
@@ -67,6 +68,7 @@ export const OBJECT_DIMENSIONS = {
   'pond_small_01': { width: 4.0, depth: 4.0, height: 0.3 },
   'tree_palm_01': { width: 2.0, depth: 2.0, height: 5.0 },
   'car_park_open_01': { width: 3.0, depth: 5.5, height: 0.1 },
+  'bush_01': { width: 1.0, depth: 1.0, height: 1.0 },
   'flower_bed_rect_01': { width: 3.0, depth: 1.5, height: 0.4 },
   'flower_bed_rect_02': { width: 1.0, depth: 2.0, height: 0.1 },
   'flower_bed_round_01': { width: 0.5, depth: 0.5, height: 0.1 },
