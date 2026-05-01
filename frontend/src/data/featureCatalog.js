@@ -44,7 +44,7 @@ export const OBJECT_COLORS_3D = {
 
 export const MODEL_PATHS = {
   'bench_wood_01': '/models/bench/bench_wood_01.glb',
-  'bench_stone_01': '/models/bench/bench_stone_01.glb',
+  'bench_stone_01': '/models/bench/stone_bench.glb',
   'pond_small_01': '/models/pond/pond_small_01.glb',
   'palm_tree': '/models/trees/palm_tree.glb',
   'car_park_open_01': '/models/car_park/car_park_open_01.glb',
@@ -65,8 +65,8 @@ export const MODEL_PATHS = {
 };
 
 export const OBJECT_DIMENSIONS = {
-  'bench_wood_01': { width: 3.0, depth: 1.2, height: 1.0 },
-  'bench_stone_01': { width: 3.5, depth: 1.4, height: 1.2 },
+  'bench_wood_01': { width: 3.0, depth: 1.4, height: 1.2 },
+  'bench_stone_01': { width: 3.0, depth: 1.4, height: 1.2 },
   'pond_small_01': { width: 2.5, depth: 2.5, height: 0.1 },
   'palm_tree': { width: 4.0, depth: 4.0, height: 7.0 },
   'maple_tree': { width: 4.0, depth: 4.0, height: 8.0 },
