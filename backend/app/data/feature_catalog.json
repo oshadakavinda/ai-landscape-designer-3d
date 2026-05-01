@@ -51,10 +51,10 @@
       "type": "trees",
       "variants": [
         {
-          "id": "tree_palm_01",
-          "width": 8.0,
-          "depth": 8.0,
-          "height": 8.0,
+          "id": "palm_tree",
+          "width": 4.0,
+          "depth": 4.0,
+          "height": 7.0,
           "render_type": "model",
           "material": null
         },
@@ -75,18 +75,10 @@
           "material": null
         },
         {
-          "id": "psx_birch_tree",
-          "width": 3.0,
-          "depth": 3.0,
-          "height": 8.0,
-          "render_type": "model",
-          "material": null
-        },
-        {
           "id": "oak_tree",
-          "width": 10.0,
-          "depth": 10.0,
-          "height": 10.0,
+          "width": 5.0,
+          "depth": 5.0,
+          "height": 6.0,
           "render_type": "model",
           "material": null
         }
