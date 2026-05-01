@@ -80,9 +80,10 @@ function GateModel({ position, rotation, gateWidth }) {
     const size = new THREE.Vector3();
     box.getSize(size);
 
-    // Scale gate to match the opening width and wall height
+    // Scale gate to match the opening width and make it taller than the wall
+    const GATE_HEIGHT = 2.3; // Increased from WALL_HEIGHT (1.8)
     const s = gateWidth / size.x;
-    const sY = WALL_HEIGHT / size.y;
+    const sY = GATE_HEIGHT / size.y;
 
     return {
       offsetX: -(box.max.x + box.min.x) / 2,
