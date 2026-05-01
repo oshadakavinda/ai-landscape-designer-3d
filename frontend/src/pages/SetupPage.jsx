@@ -13,6 +13,19 @@ const DEFAULT_FORM = {
   optional_features: { bench: 1, trees: 3, bush: 1, pathway: 1 },
 };
 
+// Per-feature maximum counts
+const FEATURE_MAX = {
+  bench: 5,
+  pond: 2,
+  fountain: 2,
+  trees: 6,
+  flower_beds: 6,
+  vegetable_beds: 3,
+  bush: 8,
+  pathway: 3,
+  well: 2,
+};
+
 export default function SetupPage({ onGenerate, onUseExample, isLoading, error, onDismissError }) {
   const [form, setForm] = useState(DEFAULT_FORM);
 
@@ -39,8 +52,24 @@ export default function SetupPage({ onGenerate, onUseExample, isLoading, error, 
     });
   };
 
+  // Derived max limits based on land dimensions
+  const maxHouseX = Math.max(0, form.land.width - form.house.width);
+  const maxHouseY = Math.max(0, form.land.depth - form.house.depth);
+  const maxHouseW = Math.max(3, form.land.width - form.house.x);
+  const maxHouseD = Math.max(3, form.land.depth - form.house.y);
+
+  const validationErrors = [];
+  if (form.house.x + form.house.width > form.land.width)
+    validationErrors.push('House exceeds land width');
+  if (form.house.y + form.house.depth > form.land.depth)
+    validationErrors.push('House exceeds land depth');
+  if (form.house.width < 3 || form.house.depth < 3)
+    validationErrors.push('House must be at least 3×3m');
+
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (validationErrors.length > 0) return;
+
     const vCount = form.vehicle_count;
     const carParkData = vCount > 0 ? {
       width: Math.max(3, vCount * 3.0),
@@ -88,12 +117,12 @@ export default function SetupPage({ onGenerate, onUseExample, isLoading, error, 
             <div className="form-row">
               <div className="form-group">
                 <label>Width (m)</label>
-                <input type="number" min="5" max="200" value={form.land.width}
+                <input type="number" min="20" max="40" value={form.land.width}
                   onChange={e => setNested('land', 'width', e.target.value)} />
               </div>
               <div className="form-group">
                 <label>Depth (m)</label>
-                <input type="number" min="5" max="200" value={form.land.depth}
+                <input type="number" min="20" max="40" value={form.land.depth}
                   onChange={e => setNested('land', 'depth', e.target.value)} />
               </div>
             </div>
@@ -108,24 +137,24 @@ export default function SetupPage({ onGenerate, onUseExample, isLoading, error, 
             <div className="form-row">
               <div className="form-group">
                 <label>X Position</label>
-                <input type="number" min="0" value={form.house.x}
+                <input type="number" min="0" max={maxHouseX} value={form.house.x}
                   onChange={e => setNested('house', 'x', e.target.value)} />
               </div>
               <div className="form-group">
                 <label>Y Position</label>
-                <input type="number" min="0" value={form.house.y}
+                <input type="number" min="0" max={maxHouseY} value={form.house.y}
                   onChange={e => setNested('house', 'y', e.target.value)} />
               </div>
             </div>
             <div className="form-row">
               <div className="form-group">
                 <label>Width</label>
-                <input type="number" min="3" value={form.house.width}
+                <input type="number" min="3" max={maxHouseW} value={form.house.width}
                   onChange={e => setNested('house', 'width', e.target.value)} />
               </div>
               <div className="form-group">
                 <label>Depth</label>
-                <input type="number" min="3" value={form.house.depth}
+                <input type="number" min="3" max={maxHouseD} value={form.house.depth}
                   onChange={e => setNested('house', 'depth', e.target.value)} />
               </div>
             </div>
@@ -230,13 +259,16 @@ export default function SetupPage({ onGenerate, onUseExample, isLoading, error, 
                       <span className="feature-label">{label}</span>
                     </label>
                     {active && (
-                      <input
-                        type="number"
-                        className="feature-count-input"
-                        min="1" max="20"
-                        value={count}
-                        onChange={e => updateFeatureCount(key, Number(e.target.value))}
-                      />
+                      <>
+                        <input
+                          type="number"
+                          className="feature-count-input"
+                          min="1" max={FEATURE_MAX[key] || 5}
+                          value={count}
+                          onChange={e => updateFeatureCount(key, Math.min(Number(e.target.value), FEATURE_MAX[key] || 5))}
+                        />
+                        <span className="feature-max-hint">max {FEATURE_MAX[key] || 5}</span>
+                      </>
                     )}
                   </div>
                 );
@@ -245,9 +277,18 @@ export default function SetupPage({ onGenerate, onUseExample, isLoading, error, 
           </div>
         </div>
 
+        {/* ── Validation Errors ── */}
+        {validationErrors.length > 0 && (
+          <div className="setup-validation-errors">
+            {validationErrors.map((err, i) => (
+              <div key={i} className="validation-error">⚠️ {err}</div>
+            ))}
+          </div>
+        )}
+
         {/* ── Actions ── */}
         <div className="setup-actions">
-          <button type="submit" className="btn-generate setup-generate-btn" disabled={isLoading}>
+          <button type="submit" className="btn-generate setup-generate-btn" disabled={isLoading || validationErrors.length > 0}>
             {isLoading ? <><span className="spinner" />Generating...</> : '🚀  Generate Design'}
           </button>
           <button type="button" className="setup-example-link" onClick={onUseExample}>

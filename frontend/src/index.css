@@ -1072,6 +1072,32 @@ input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.2); }
 }
 
 /* ── Actions ──────────────────────────────────────────────────── */
+/* ── Validation Errors ── */
+.setup-validation-errors {
+  max-width: 860px;
+  margin: 0 auto 8px;
+  padding: 0 8px;
+}
+.validation-error {
+  background: rgba(248, 113, 113, 0.1);
+  border: 1px solid rgba(248, 113, 113, 0.3);
+  border-radius: 8px;
+  padding: 10px 16px;
+  margin-bottom: 6px;
+  color: #f87171;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+/* ── Feature Max Hint ── */
+.feature-max-hint {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  opacity: 0.6;
+  margin-left: 6px;
+  white-space: nowrap;
+}
+
 .setup-actions {
   display: flex;
   flex-direction: column;
