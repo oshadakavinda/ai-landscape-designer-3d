@@ -50,6 +50,12 @@
       "variants": [
         { "id": "path_stone_01", "width": 1.2, "depth": 1.2 }
       ]
+    },
+    {
+      "type": "well",
+      "variants": [
+        { "id": "well_01", "width": 1.5, "depth": 1.5 }
+      ]
     }
   ]
 }

@@ -4,7 +4,7 @@ def get_vastu_prompt_guidelines(priority: int, road_direction: str) -> str:
     
     guidelines = []
     if priority >= 4:
-        guidelines.append("- If possible, place water features (pond, fountain) towards the North or East.")
+        guidelines.append("- If possible, place water features (pond, fountain, well) towards the North or East.")
         guidelines.append("- Prefer green spaces (lawn, flower beds) in the North or East.")
         guidelines.append(f"- The road is on the {road_direction}. Ensure clear access from the road to the house.")
         

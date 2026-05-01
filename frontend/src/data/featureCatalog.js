@@ -10,6 +10,7 @@ export const FEATURES = [
   { key: 'driveway', label: '🛣️ Driveway' },
   { key: 'garden_lights', label: '💡 Lights' },
   { key: 'seating_area', label: '🛋️ Seating' },
+  { key: 'well', label: '🪣 Well' },
 ];
 
 export const OBJECT_COLORS = {
@@ -26,6 +27,7 @@ export const OBJECT_COLORS = {
   seating_area: '#c4b5fd',
   open_car_park: '#94a3b8',
   covered_car_park: '#64748b',
+  well: '#94a3b8',
 };
 
 export const OBJECT_COLORS_3D = {
@@ -42,6 +44,7 @@ export const OBJECT_COLORS_3D = {
   seating_area: '#7c3aed',
   open_car_park: '#475569',
   covered_car_park: '#334155',
+  well: '#475569',
 };
 
 export const MODEL_PATHS = {
@@ -55,6 +58,7 @@ export const MODEL_PATHS = {
   'flower_bed_round_01': '/models/flower_beds/flower_bed_round_01.glb',
   'fountain_round_01': '/models/fountain/fountain_round_01.glb',
   'path_stone_01': '/models/decor/path_stone_01.glb',
+  'well_01': '/models/well/stone_well_stylized.glb',
 };
 
 export const OBJECT_DIMENSIONS = {
@@ -68,5 +72,6 @@ export const OBJECT_DIMENSIONS = {
   'flower_bed_round_01': { width: 0.5, depth: 0.5, height: 0.1 },
   'fountain_round_01': { width: 1, depth: 1.5, height: 0.1 },
   'path_stone_01': { width: 1.2, depth: 1.2, height: 0.05 },
+  'well_01': { width: 1.5, depth: 1.5, height: 2.0 },
   'default': { width: 1.0, depth: 1.0, height: 1.0 }
 };

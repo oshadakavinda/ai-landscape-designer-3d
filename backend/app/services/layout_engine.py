@@ -245,6 +245,7 @@ def _mock_intent(input_data: LandscapeDesignInput) -> list[dict]:
         "seating_area":    {"variant": "seating_patio_01", "zone": "east"},
         "open_car_park":   {"variant": "car_park_open_01", "zone": "south_east"},
         "covered_car_park":{"variant": "car_park_covered_01","zone": "south_west"},
+        "well":            {"variant": "well_01",          "zone": "north_east"},
     }
     intent = []
     for feature_type, count in input_data.optional_features.items():

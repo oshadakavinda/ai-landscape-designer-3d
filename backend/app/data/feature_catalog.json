@@ -50,6 +50,12 @@
       "variants": [
         {"id": "car_park_open_01", "width": 3.0, "depth": 5.5, "height": 0.05, "render_type": "flat", "material": "concrete"}
       ]
+    },
+    {
+      "type": "well",
+      "variants": [
+        {"id": "well_01", "width": 1.5, "depth": 1.5, "height": 2.0, "render_type": "model", "material": null}
+      ]
     }
   ]
 }
